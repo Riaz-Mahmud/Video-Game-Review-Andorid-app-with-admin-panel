@@ -15,21 +15,21 @@ use App\Http\Controllers\API\User\UserController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+//version 1 routes
+Route::prefix('v1')->group(function () {
 
-Route::post('/login', [UserController::class, 'login'])->name('api.v1.login');
-Route::post('/logout', [UserController::class, 'logout'])->name('api.v1.logout');
-Route::post('/me', [UserController::class, 'me'])->name('api.v1.me');
-Route::post('/registration', [UserController::class, 'registration'])->name('api.v1.user.registration');
+    Route::post('/login', [UserController::class, 'login'])->name('api.v1.login');
+    Route::post('/logout', [UserController::class, 'logout'])->name('api.v1.logout');
+    Route::post('/me', [UserController::class, 'me'])->name('api.v1.me');
+    Route::post('/registration', [UserController::class, 'registration'])->name('api.v1.user.registration');
 
-Route::middleware('auth:api')->group(function(){
 
-    //version 1 routes
-    Route::prefix('v1')->group(function () {
+    Route::middleware('auth:api')->group(function(){
 
         Route::prefix('user')->group(function () {
 
             Route::get('profile', [UserController::class, 'profile'])->name('api.v1.user.profile');
-            Route::post('checkstatus', [UserController::class, 'CheckUserStatus'])->name('api.v1.user.checkstatus');
+            Route::post('/checkStatus', [UserController::class, 'checkUserStatus'])->name('api.v1.user.checkstatus');
         });
 
         //////////////////// Games Start ////////////////////

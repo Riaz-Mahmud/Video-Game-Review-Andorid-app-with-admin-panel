@@ -15,7 +15,7 @@ class UserController extends APIController
 {
     public function __construct(){
 
-        $this->middleware('auth:api', ['except' => ['login' , 'registration']]);
+        $this->middleware('auth:api', ['except' => ['login' , 'registration', 'checkUserStatus']]);
 
     }
 
@@ -30,7 +30,7 @@ class UserController extends APIController
                 'password' => 'required|string|min:8',
             ]);
         if ($validator->fails()) {
-            return parent::apiResponse(false, $validator->errors(), null);
+            return parent::apiResponse(false, $validator->errors()->first(), null);
         }
 
         DB::beginTransaction();
@@ -111,17 +111,14 @@ class UserController extends APIController
         return parent::apiResponse(true, null, ['user' => auth('api')->user()]);
     }
 
-    public function CheckUserStatus(Request $request){
+    public function checkUserStatus(Request $request){
 
         $validator = Validator::make($request->all(),
             [
-                'user_id' => 'required'
+                'user_id' => 'required',
             ]);
         if ($validator->fails()) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Required data missing.'
-            ]);
+            return parent::apiResponse(false, 'user id: '. $request->user_id, null);
         } else {
             $user = Profile::where('id', $request->user_id)->where('status', 'Active')->where('is_deleted', 0)->first();
             if ($user) {
