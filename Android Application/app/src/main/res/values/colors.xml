@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#1A1A1A</color>
+    <color name="blackOriginal">#000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="red">#DE2C2C</color>
+    <color name="lightRed">#ffcccb </color>
+
+    <color name="fiverBlue">#1dbf73</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="MoreDetailsButton">#1A5276</color>
+    <color name="aboutTheme">#003d66</color>
+    <color name="LightBlack">#767676</color>
+    <color name="DarkColor">#1e272c</color>
+    <color name="Dark">#454545</color>
+    <color name="whiteLight">#EAE7E7</color>
+
+<!--    onBoarding-->
+    <color name="blackNavy">#10101C</color>
+    <color name="next_1">#8B88DC</color>
+    <color name="next_2">#0183C5</color>
+    <color name="next_3">#2F6DFF</color>
+    <color name="next_4">#5FA091</color>
+    <color name="dark_navy">#0E2132</color>
+
+    <color name="contentBodyColor">#FFFFFF</color>
+    <color name="contentTextColor">#020000</color>
+    <color name="imageBorderColor">#E01E7A</color>
+    <color name="miniTitle">#2A2E43</color>
+    <color name="fixedTextColor">#5D5C5C</color>
+
+    <color name="contentBodyColor_Old">#FCFCFC</color>
+
+<!--    custom notification layout color-->
+    <color name="blackCustomNotification">#1A1A1A</color>
+    <color name="whiteCustomNotification">#FFFFFFFF</color>
+<!--        custom notification layout color-->
+
+</resources>

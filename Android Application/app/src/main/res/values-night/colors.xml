@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!--    <color name="contentBodyColor">#000</color>-->
+<!--    <color name="contentTextColor">#fff</color>-->
+<!--    <color name="miniTitle">#fff</color>-->
+
+    <color name="contentBodyColor">#FFFFFF</color>
+    <color name="contentTextColor">#020000</color>
+    <color name="imageBorderColor">#E01E7A</color>
+    <color name="miniTitle">#2A2E43</color>
+    <color name="fixedTextColor">#5D5C5C</color>
+
+    <!--    custom notification layout color-->
+    <color name="blackCustomNotification">#FFFFFFFF</color>
+    <color name="whiteCustomNotification">#1A1A1A</color>
+    <!--        custom notification layout color-->
+</resources>
