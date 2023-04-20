@@ -257,6 +257,8 @@
     <string name="write_review">Write Review</string>
     <string name="reviews">Reviews</string>
     <string name="no_review_found">No Review Found!</string>
+    <string name="new_review">New Review</string>
+    <string name="rating">Rating</string>
 
 
     <string-array name="location_spinner">

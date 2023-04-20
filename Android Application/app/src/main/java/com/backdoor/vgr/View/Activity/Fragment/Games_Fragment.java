@@ -43,13 +43,6 @@ import retrofit2.Response;
  */
 public class Games_Fragment extends Fragment {
 
-    ArrayAdapter<String> locationListAdapter, zoneListAdapter;
-    String[] item, zoneItem;
-
-    private boolean isBloodGroupSelected;
-    private String selectedBloodGroup = "";
-
-    boolean isSearch;
     Animation fromBottom;
 
     //Binding
@@ -59,7 +52,6 @@ public class Games_Fragment extends Fragment {
     private RecyclerView recyclerView;
     private GameAdapter adapter;
     private List<GameDetailsContact> gameDetailsContactList;
-    private GameContact gameContact;
     private boolean isGameLoad;
     private ImageView noDataFound;
     private SwipeRefreshLayout refreshLayout;

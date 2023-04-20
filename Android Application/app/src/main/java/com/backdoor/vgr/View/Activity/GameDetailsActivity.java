@@ -2,8 +2,11 @@ package com.backdoor.vgr.View.Activity;
 
 import static com.backdoor.vgr.View.Activity.MainActivity.perfConfig;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.text.LineBreaker;
@@ -11,6 +14,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -18,12 +22,17 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +44,9 @@ import com.backdoor.vgr.View.Model.Game.ReviewAdapter;
 import com.backdoor.vgr.View.Model.Game.SingleGameContact;
 import com.backdoor.vgr.network.ApiClient;
 import com.backdoor.vgr.network.ApiInterface;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -57,6 +69,10 @@ public class GameDetailsActivity extends AppCompatActivity {
     private RecyclerView reviewsRecyclerView;
     private List<GameReviews> gameReviewsList;
     private ReviewAdapter reviewAdapter;
+
+    private static final int PERMISSION_CODE = 101;
+    String[] permissions_all = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+    private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +114,11 @@ public class GameDetailsActivity extends AppCompatActivity {
         refresh();
 
         backBtn.setOnClickListener(v -> GameDetailsActivity.super.onBackPressed());
+
+        writeReviewBtn.setOnClickListener(view -> {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            checkLocationPermission();
+        });
     }
 
     private void refresh() {
@@ -235,4 +256,104 @@ public class GameDetailsActivity extends AppCompatActivity {
         NetworkInfo activeNetwork = manager.getActiveNetworkInfo();
         return activeNetwork != null;
     }
+
+    private void checkLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            resultLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
+            return;
+        }
+
+        showBottomDialog();
+    }
+
+    public void showSettingsAlert() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(GameDetailsActivity.this);
+
+        // Setting Dialog Title
+        alertDialog.setTitle("GPS is settings");
+
+        // Setting Dialog Message
+        alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
+
+        // On pressing the Settings button.
+        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+        });
+
+        // On pressing the cancel button
+        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        // Showing Alert Message
+        alertDialog.show();
+    }
+
+    private final ActivityResultLauncher<String> resultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+        if (isGranted) {
+            writeReview();
+        } else {
+            perfConfig.displayToast("Location permission not granted");
+        }
+    });
+
+    private void writeReview() {
+        showBottomDialog();
+    }
+
+    private void showBottomDialog() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(GameDetailsActivity.this, R.style.DialogStyle);
+        bottomSheetDialog.setContentView(R.layout.item_bottom_new_review);
+        bottomSheetDialog.setCanceledOnTouchOutside(true);
+
+        Button submitReviewBtn = bottomSheetDialog.findViewById(R.id.submitReviewBtn);
+        EditText messageBox = bottomSheetDialog.findViewById(R.id.messageBox);
+        RatingBar ratingBar = bottomSheetDialog.findViewById(R.id.ratingForNewReview);
+
+        assert messageBox != null;
+        assert submitReviewBtn != null;
+        assert ratingBar != null;
+
+        submitReviewBtn.setOnClickListener(view -> {
+            if (messageBox.getText().toString().isEmpty()) {
+                messageBox.setError("Can't Empty");
+                perfConfig.displayToast("Message Box is Empty");
+            } else {
+                submitReview();
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+    private void getLatLon(){
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            resultLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
+            return;
+        }
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+            if (location != null) {
+                double lat = location.getLatitude();
+                double lon = location.getLongitude();
+
+                perfConfig.displayToast("lat: " + lat + " Lon: "+ lon);
+            }else {
+                showSettingsAlert();
+            }
+        });
+    }
+
+    private void submitReview() {
+        if (checkConnection()){
+            double lat
+        }
+    }
+
 }

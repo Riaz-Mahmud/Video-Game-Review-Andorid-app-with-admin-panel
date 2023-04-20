@@ -25,7 +25,13 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:drawablePadding">15dp</item>
     </style>
-    <style name="viewParent.headerText.settingsTextIcon" parent="settingsText">
+
+    <style name="viewParent.headerText.settingsTextIcon" parent="settingsText"></style>
+
+    <style name="DialogStyle" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
 
