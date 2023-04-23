@@ -1,1 +1,1 @@
-"# Video Game Review" 
+Video Game Review
