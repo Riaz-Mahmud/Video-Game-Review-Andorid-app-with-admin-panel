@@ -118,7 +118,7 @@ class UserController extends APIController
                 'user_id' => 'required',
             ]);
         if ($validator->fails()) {
-            return parent::apiResponse(false, 'user id: '. $request->user_id, null);
+            return parent::apiResponse(false, $validator->errors()->first(), null);
         } else {
             $user = Profile::where('id', $request->user_id)->where('status', 'Active')->where('is_deleted', 0)->first();
             if ($user) {

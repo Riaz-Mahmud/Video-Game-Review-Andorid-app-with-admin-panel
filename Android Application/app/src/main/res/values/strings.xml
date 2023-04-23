@@ -43,130 +43,33 @@
     <string name="todo">TODO</string>
     <string name="username_or_phone_number">Username or Phone Number</string>
     <string name="phone_number">Phone Number</string>
-    <string name="Confirm_password">Confirm Password</string>
     <string name="Continue">Continue</string>
     <string name="create_an_account">Create An Account</string>
-    <string name="by_clicking_continue_you_will_proceed_to_the_verification">By clicking continue you will proceed to the verification</string>
-    <string name="agree_with_privacy_amp_policy"><![CDATA[Agree with privacy and policy]]></string>
-    <string name="More">More</string>
-    <string name="History">History</string>
-    <string name="Requests">Request</string>
-    <string name="Find_donors">Find Donor</string>
     <string name="Profile">Profile</string>
     <string name="Change_password">Change Password</string>
     <string name="About">About</string>
     <string name="BackDoor">BackDoor</string>
     <string name="developerName">Al Mahmud Riaz</string>
     <string name="develop_by">Develop By</string>
-    <string name="double_hipen">--</string>
-    <string name="total_donate">Total Donate</string>
-    <string name="last_donate">Last Donate</string>
-    <string name="location">Location</string>
-    <string name="location_imp">Location <font color='red'>*</font></string>
     <string name="email">Email</string>
-    <string name="last_donation">Last Donation</string>
-    <string name="call_for_blood">Call For Blood</string>
-    <string name="date">Date</string>
-    <string name="date_imp">Date <font color='red'>*</font></string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
-    <string name="requested_for">Requested For</string>
-    <string name="requested_by">Requested By</string>
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
-    <string name="time">Time</string>
-    <string name="relation">Relation</string>
-    <string name="contact">Contact</string>
-    <string name="full_details">Full Details</string>
-    <string name="select_location">Select Location</string>
-    <string name="have_you_donate_blood_before">Have you Donate Blood before?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="submit">Submit</string>
-    <string name="life">Life</string>
-    <string name="cell">Cell</string>
-    <string name="blood_group">Blood Group</string>
-    <string name="user_response">User Response</string>
-    <string name="response_your_blood_request">Response your blood request</string>
-    <string name="request_for">Request for</string>
-    <string name="aPos">A+</string>
-    <string name="aNeg">A-</string>
-    <string name="bPos">B+</string>
-    <string name="bNeg">B-</string>
-    <string name="oPos">O+</string>
-    <string name="oNeg">O-</string>
-    <string name="abPos">AB+</string>
-    <string name="abNeg">AB-</string>
-    <string name="search_donor">Search Donor</string>
-    <string name="choose_blood_group">Choose Blood Group</string>
-    <string name="search_for_blood_donors_around_you">Search for blood donors around you</string>
-    <string name="find_donors">Find Donors</string>
-    <string name="request_for_blood">Request For Blood</string>
-    <string name="request_for_blood_whenever_wherever_you_need">Request for blood whenever wherever you need</string>
-    <string name="enter_location">Enter Location</string>
-    <string name="choose_date">Choose Date</string>
-    <string name="choose_time">Choose time</string>
-    <string name="blood_unit">Blood Unit</string>
-    <string name="enter_blood_unit">Enter blood unit</string>
-    <string name="patient">Patient</string>
-    <string name="enter_patient_name">Enter Patient Name</string>
     <string name="male">Male</string>
     <string name="female">female</string>
-    <string name="relation_with_patient">Relation with patient</string>
-    <string name="request_for_donor">Request for Donor</string>
-    <string name="aiub_solution">AIUB Solution</string>
-    <string name="by_backdoor">By BackDoor</string>
-    <string name="countryCode">+88</string>
-    <string name="select_blood_group">Select Blood Group</string>
     <string name="enter_your_name">Enter your name</string>
     <string name="enter_your_phone_number">Enter your phone number</string>
     <string name="enter_your_password">Enter your password</string>
     <string name="enter_your_confirm_password">Enter your confirm password</string>
     <string name="privacy_amp_policy"><![CDATA[Privacy & Policy]]></string>
-    <string name="mark_as_complete"> Mark as Complete</string>
-    <string name="response">Response</string>
-    <string name="accept_request">Accept Request  </string>
-    <string name="no_request_found">No Request Found</string>
-    <string name="no_response_found">No Response Found</string>
-    <string name="moto">It\'s not about 450ml liquid, It\'s a new Life</string>
-    <string name="about_moto">It\'s not about 450ml liquid,\n It\'s a new Life</string>
-    <string name="see_all">See All</string>
-    <string name="accept">Accept</string>
-    <string name="last_3">Last 3</string>
-    <string name="notification">Notification</string>
-    <string name="report">Report</string>
-    <string name="call_for_cancel">Call For Cancel</string>
-    <string name="fake">Fake</string>
-    <string name="spam">Spam</string>
-    <string name="business_purpose">Business Purpose</string>
-    <string name="hate_speech">Hate Speech</string>
     <string name="others">Others</string>
-    <string name="false_information">False Information</string>
-    <string name="complete_your_profile">Complete Your Profile</string>
-    <string name="select_district">Select District</string>
-    <string name="select_area">Select Area</string>
-    <string name="finish">Finish</string>
-    <string name="donors_list">Donors List</string>
-    <string name="found_donors_with">Found donors with</string>
-    <string name="update_request">Update Request</string>
     <string name="gender">Gender</string>
-    <string name="update_blood_request">Update Blood Request</string>
-    <string name="next_donation">Next Donation</string>
-    <string name="donations">Donations</string>
-    <string name="cancel_amp_call_user"><![CDATA[Cancel & Call User]]></string>
-    <string name="request_cancel">Request Cancel</string>
     <string name="log_out">Log Out</string>
     <string name="language">Language</string>
-    <string name="notifications">Notifications</string>
-    <string name="share">Share</string>
-    <string name="contact_with_us">Contact with us</string>
-    <string name="available_for_donate">Available for Donate</string>
-    <string name="current_password">Current Password</string>
-    <string name="new_password">New Password</string>
-    <string name="developed_by">Developed by</string>
-    <string name="backdoor_it">BackDoor IT</string>
-    <string name="dedicate">Dedicated to</string>
-    <string name="donate_status">Donate Status</string>
     <string name="full_name">Full Name</string>
     <string name="date_of_birth">Date of birth</string>
     <string name="edit_profile">Edit Profile</string>
@@ -176,74 +79,18 @@
     <string name="enter_short_title">Enter Short Title</string>
     <string name="call">Call</string>
     <string name="refresh">Refresh</string>
-    <string name="make_new_blood_request">Make New Blood Request</string>
-    <string name="blood_request">Blood Post</string>
-    <string name="donate_blood_for">Donate Blood For</string>
-    <string name="view_profile">View Profile</string>
-    <string name="confirm_blood_donate">Confirm Blood Donate</string>
-    <string name="remove_user">Remove User</string>
-    <string name="cancel_blood_donate_request">Cancel Blood Donate Request</string>
-    <string name="suggest">Suggest</string>
-    <string name="friend">Friend</string>
-    <string name="family">Family</string>
     <string name="enter_your_email">Enter Your Email</string>
-    <string name="enter_your_email_optional">Enter Your Email (Optional)</string>
-    <string name="how_many_times_have_you_donated_blood">How many times have you donated blood?</string>
-    <string name="enter_the_last_donated_date">Enter the last donated date.</string>
     <string name="next">Next</string>
     <string name="message">Message</string>
     <string name="others_message">Others message</string>
     <string name="enter_address">Enter Address</string>
     <string name="details">Details</string>
-    <string name="see_received_blood_request_and_also_check_your_request_status">See received blood request and also check your request status</string>
-    <string name="life_saved">Life Saved</string>
-    <string name="you_are_a_real_hero">You are a real Hero</string>
     <string name="colon">:</string>
-    <string name="enter_the_verification_code_that_has_been_sent_to_your_phone_number">Enter the verification code that has been sent to your Phone Number</string>
-    <string name="verification">Verification</string>
-    <string name="don_t_receive_any_code">Don\'t receive any code?</string>
-    <string name="resend_code">Resend Code</string>
-    <string name="enter_otp_code">Enter OTP Code</string>
-    <string name="search_user">Search User</string>
-    <string name="enter_the_phone_number_associated_with_your_account">Enter the phone number associated with your account.</string>
-    <string name="send">Send</string>
-    <string name="forget__password">Forgot Password</string>
-    <string name="relax_and_try_to_remember_your_password">Relax and try to Remember your password!</string>
-    <string name="thanks">Thanks</string>
-    <string name="search">Search</string>
-    <string name="send_otp">Send OTP</string>
-    <string name="vai_email">Vai Email</string>
-    <string name="vai_sms">Vai SMS</string>
-    <string name="reset_password">Reset Password</string>
-    <string name="referral_code_optional">Referral Code (Optional)</string>
-    <string name="copy">copy</string>
-    <string name="your_referral_code">Your Referral Code</string>
-    <string name="scan_id">Scan ID</string>
-    <string name="scan_national_id">Scan National ID</string>
-    <string name="front_of_nid">Front of NID</string>
-    <string name="refer">Refer</string>
-    <string name="add_history">add history</string>
-    <string name="donate_history">Donate History</string>
-    <string name="make_history">Make History</string>
-    <string name="where_you_donate_blood">Where you donate blood</string>
-    <string name="blood_donate_date">Blood Donate Date</string>
-    <string name="select_image_optional">Select Image</string>
-    <string name="history_type">History Type <font color='red'>*</font></string>
-    <string name="new_post_history_make_text">\'NEW DONATE\' It will change your Last Donate Date and Total Donate Count. \n\'নতুন ডোনেট\' আপনার শেষ রক্ত দানের তারিখ এবং সর্বমোট রক্ত দানের সংখ্যা পরিবর্তন করবে।</string>
-    <string name="old_post_history_make_text">\'OLD DONATE\' It will not change your last donate date and total donate count. \n\'পুরাতন ডোনেট\' আপনার শেষ রক্ত দানের তারিখ এবং সর্বমোট রক্ত দানের সংখ্যা পরিবর্তন করবে না।</string>
-    <string name="how_did_you_find_it_to_donate">How did you find it to donate?</string>
-    <string name="new_donate">New Donate</string>
-    <string name="old_donate">Old Donate</string>
-    <string name="please_update_from_google_play">Please update from Google Play</string>
     <string name="update">Update</string>
     <string name="new_version_available">New Version Available</string>
     <string name="the_app_is_under_maintenance">The app is under maintenance</string>
     <string name="close">Close</string>
-    <string name="please_add_a_minimum_of_1_donation_location">Mark the locations in your area where you can donate blood. <font color='red'>Please select at least 1 blood donation location.</font>-\nআপনার কাছাকাছি স্থান গুলো টিক মার্ক করুন যেখানে আপনি রক্ত দান করতে পারবেন। <font color='red'>অনুগ্রহ করে ন্যূনতম ১টি রক্ত দানের স্থান সিলেক্ট করুন।</font></string>
-    <string name="life_cell_txt"><font color='#DE2C2C'>Life</font> <font color='black'>Cell</font></string>
     <string name="other">Other</string>
-    <string name="present_address">Present Address</string>
-    <string name="home_page_donate_blood">ব্লাড ডোনেট করার জন্য আপনি কোন লোকেশন সিলেক্ট করেন নি।</string>
     <string name="games">Games</string>
     <string name="enter_your_email_address">Enter your email address</string>
     <string name="type_your_username">Type your Username</string>
@@ -259,34 +106,10 @@
     <string name="no_review_found">No Review Found!</string>
     <string name="new_review">New Review</string>
     <string name="rating">Rating</string>
+    <string name="type_your_review">Type Your Review</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="agree_with_privacy_amp_policy"><![CDATA[Agree with privacy & policy]]></string>
+    <string name="share">Share</string>
 
-
-    <string-array name="location_spinner">
-        <item>Select Location</item>
-        <item>Bosundhora</item>
-        <item>Uttora</item>
-        <item>Banani</item>
-        <item>Shamoli</item>
-        <item>Khilkhet</item>
-        <item>Dhanmondi</item>
-        <item>Mirpur</item>
-        <item>motijheel</item>
-        <item>Puran dhaka</item>
-        <item>Mirpur</item>
-        <item>motijheel</item>
-        <item>Puran dhaka</item>
-    </string-array>
-
-    <string-array name="bloodGroup_spinner">
-        <item>Select Blood Group</item>
-        <item>A+</item>
-        <item>A-</item>
-        <item>AB+</item>
-        <item>AB-</item>
-        <item>B+</item>
-        <item>B-</item>
-        <item>O+</item>
-        <item>O-</item>
-    </string-array>
 
 </resources>

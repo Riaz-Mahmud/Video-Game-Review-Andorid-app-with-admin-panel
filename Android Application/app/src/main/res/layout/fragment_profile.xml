@@ -36,162 +36,155 @@
                 android:textColor="@color/contentTextColor"
                 android:textSize="30sp" />
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/swipeRefreshProfile"
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/moreText"
-                android:layout_marginTop="20dp">
+                android:layout_below="@+id/moreText"
+                android:layout_marginTop="0dp">
 
-                <androidx.core.widget.NestedScrollView
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_below="@id/swipeRefreshProfile">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <LinearLayout
+                        android:id="@+id/header_person_info"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
-                        <LinearLayout
-                            android:id="@+id/header_person_info"
-                            android:layout_width="match_parent"
+                        <RelativeLayout
+                            android:id="@+id/adminInfoLayout"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginEnd="10dp"
-                            android:gravity="center"
-                            android:orientation="horizontal">
+                            android:gravity="center">
 
-                            <RelativeLayout
-                                android:id="@+id/adminInfoLayout"
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/profileFrgImageView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:gravity="center">
+                                android:layout_rowWeight="1"
+                                android:layout_columnWeight="1"
+                                android:layout_gravity="center"
+                                android:layout_margin="8dp"
+                                app:cardCornerRadius="50dp"
+                                app:cardElevation="8dp">
 
-                                <androidx.cardview.widget.CardView
-                                    android:id="@+id/profileFrgImageView"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_rowWeight="1"
-                                    android:layout_columnWeight="1"
-                                    android:layout_gravity="center"
-                                    android:layout_margin="8dp"
-                                    app:cardCornerRadius="50dp"
-                                    app:cardElevation="8dp">
+                                <de.hdodenhof.circleimageview.CircleImageView
+                                    android:id="@+id/userPicture"
+                                    android:layout_width="100dp"
+                                    android:layout_height="100dp"
+                                    android:layout_marginStart="0dp"
+                                    android:layout_marginTop="0dp"
+                                    android:layout_marginEnd="0dp"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/icon_user"
+                                    tools:ignore="TooDeepLayout" />
 
-                                    <de.hdodenhof.circleimageview.CircleImageView
-                                        android:id="@+id/userPicture"
-                                        android:layout_width="100dp"
-                                        android:layout_height="100dp"
-                                        android:layout_marginStart="0dp"
-                                        android:layout_marginTop="0dp"
-                                        android:layout_marginEnd="0dp"
-                                        android:scaleType="centerCrop"
-                                        android:src="@drawable/icon_user"
-                                        tools:ignore="TooDeepLayout" />
-
-                                </androidx.cardview.widget.CardView>
+                            </androidx.cardview.widget.CardView>
 
 
-                            </RelativeLayout>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:layout_marginStart="5dp"
-                                android:layout_marginTop="0dp"
-                                android:layout_marginBottom="0dp"
-                                android:gravity="center_vertical"
-                                android:orientation="vertical"
-                                android:visibility="gone">
-
-                                <TextView
-                                    android:id="@+id/nameProfileFrg"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="@{profilePageViewModel.fullName}"
-                                    android:textColor="@color/contentTextColor"
-                                    android:textSize="22sp" />
-
-                                <TextView
-                                    android:id="@+id/numberProfileFrg"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="@{profilePageViewModel.phoneNumber}"
-                                    android:textColor="@color/contentTextColor"
-                                    android:textSize="18sp" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/userNameProfileFrg"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:gravity="center"
-                            android:text="@{profilePageViewModel.fullName}"
-                            android:textColor="@color/contentTextColor"
-                            android:textSize="22sp"
-                            android:visibility="visible" />
+                        </RelativeLayout>
 
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="30dp"
-                            android:orientation="vertical">
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="0dp"
+                            android:layout_marginBottom="0dp"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
                             <TextView
+                                android:id="@+id/nameProfileFrg"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
-                                android:paddingStart="20dp"
-                                android:paddingEnd="20dp"
-                                android:text="@string/tools"
-                                android:textColor="@color/fixedTextColor" />
+                                android:text="@{profilePageViewModel.fullName}"
+                                android:textColor="@color/contentTextColor"
+                                android:textSize="22sp" />
 
                             <TextView
-                                style="@style/viewParent.headerText.settingsTextIcon"
-                                android:background="@drawable/view_background"
-                                android:onClick="@{()->profilePageViewModel.onTopBtnPress(3)}"
-                                android:paddingStart="20dp"
-                                android:paddingTop="8dp"
-                                android:paddingEnd="20dp"
-                                android:paddingBottom="8dp"
-                                android:text="@string/share"
-                                app:drawableStartCompat="@drawable/ic_baseline_share_24"
-                                app:drawableTint="@color/black" />
-
-                            <TextView
-                                android:id="@+id/userLogoutBtn"
-                                style="@style/viewParent.headerText.settingsTextIcon"
-                                android:background="@drawable/view_background"
-                                android:onClick="@{()->profilePageViewModel.onTopBtnPress(4)}"
-                                android:paddingStart="20dp"
-                                android:paddingTop="8dp"
-                                android:paddingEnd="20dp"
-                                android:paddingBottom="8dp"
-                                android:text="@string/log_out"
-                                app:drawableStartCompat="@drawable/ic_baseline_logout"
-                                app:drawableTint="@color/black" />
-
-                            <TextView
-                                style="@style/viewParent.headerText.settingsMiniTitle"
-                                android:paddingStart="20dp"
-                                android:paddingEnd="20dp"
-                                android:text="@string/app_version"
-                                android:textAlignment="center" />
+                                android:id="@+id/numberProfileFrg"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@{profilePageViewModel.phoneNumber}"
+                                android:textColor="@color/contentTextColor"
+                                android:textSize="18sp" />
 
                         </LinearLayout>
 
                     </LinearLayout>
 
-                </androidx.core.widget.NestedScrollView>
+                    <TextView
+                        android:id="@+id/userNameProfileFrg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:text="@{profilePageViewModel.fullName}"
+                        android:textColor="@color/contentTextColor"
+                        android:textSize="22sp"
+                        android:visibility="visible" />
 
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="30dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:paddingStart="20dp"
+                            android:paddingEnd="20dp"
+                            android:text="@string/tools"
+                            android:textColor="@color/fixedTextColor" />
+
+                        <TextView
+                            style="@style/viewParent.headerText.settingsTextIcon"
+                            android:background="@drawable/view_background"
+                            android:onClick="@{()->profilePageViewModel.onTopBtnPress(3)}"
+                            android:paddingStart="20dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="20dp"
+                            android:paddingBottom="8dp"
+                            android:text="@string/share"
+                            app:drawableStartCompat="@drawable/ic_baseline_share_24"
+                            app:drawableTint="@color/black" />
+
+                        <TextView
+                            android:id="@+id/userLogoutBtn"
+                            style="@style/viewParent.headerText.settingsTextIcon"
+                            android:background="@drawable/view_background"
+                            android:onClick="@{()->profilePageViewModel.onTopBtnPress(4)}"
+                            android:paddingStart="20dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="20dp"
+                            android:paddingBottom="8dp"
+                            android:text="@string/log_out"
+                            app:drawableStartCompat="@drawable/ic_baseline_logout"
+                            app:drawableTint="@color/black" />
+
+                        <TextView
+                            style="@style/viewParent.headerText.settingsMiniTitle"
+                            android:paddingStart="20dp"
+                            android:paddingEnd="20dp"
+                            android:text="@string/app_version"
+                            android:textAlignment="center" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
 
         </RelativeLayout>
 

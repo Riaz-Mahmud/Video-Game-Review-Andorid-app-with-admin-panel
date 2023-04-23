@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\Game\GameController;
 use App\Http\Controllers\API\User\UserController;
+use App\Http\Controllers\API\Review\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,10 +40,10 @@ Route::prefix('v1')->group(function () {
             Route::get('list/{id}', [GameController::class, 'details'])->name('api.v1.games.details');
 
             //////////////////// Reviews Start ////////////////////
-            Route::prefix('reviews')->group(function () {
-                Route::get('list', [GameController::class, 'reviewsList'])->name('api.v1.games.reviews.list');
-                Route::get('list/{id}', [GameController::class, 'reviewsDetails'])->name('api.v1.games.reviews.details');
-                Route::post('add', [GameController::class, 'reviewsAdd'])->name('api.v1.games.reviews.add');
+            Route::prefix('{gameId}/reviews')->group(function () {
+                Route::get('list', [ReviewController::class, 'list'])->name('api.v1.games.reviews.list');
+                Route::get('list/{id}', [ReviewController::class, 'show'])->name('api.v1.games.reviews.show');
+                Route::post('add', [ReviewController::class, 'store'])->name('api.v1.games.reviews.store');
             });
             //////////////////// Reviews End ////////////////////
         });

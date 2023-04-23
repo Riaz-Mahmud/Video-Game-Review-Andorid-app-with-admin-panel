@@ -90,4 +90,7 @@ dependencies {
 
     //location
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+
+    //CustomAnimationActivity
+    implementation 'com.github.hajiyevelnur92:intentanimation:1.0'
 }

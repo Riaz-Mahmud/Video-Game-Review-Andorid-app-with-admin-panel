@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.backdoor.vgr.R;
 
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Response;
 
@@ -45,6 +46,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
             holder.parentLayout.setBackgroundTintList(AppCompatResources.getColorStateList(mContext, R.color.whiteLight));
         } else {
             holder.parentLayout.setBackgroundTintList(AppCompatResources.getColorStateList(mContext, R.color.white));
+        }
+
+        if (!Objects.equals(contact.get(position).getStatus(), "Active")){
+            name = name + " (" + contact.get(position).getStatus() + ")";
         }
 
         holder.userName.setText(name);

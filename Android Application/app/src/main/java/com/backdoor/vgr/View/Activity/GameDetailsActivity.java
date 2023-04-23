@@ -2,7 +2,6 @@ package com.backdoor.vgr.View.Activity;
 
 import static com.backdoor.vgr.View.Activity.MainActivity.perfConfig;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -39,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.backdoor.vgr.R;
+import com.backdoor.vgr.View.Model.Default_Contact;
 import com.backdoor.vgr.View.Model.Game.GameReviews;
 import com.backdoor.vgr.View.Model.Game.ReviewAdapter;
 import com.backdoor.vgr.View.Model.Game.SingleGameContact;
@@ -64,15 +64,15 @@ public class GameDetailsActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeRefresh;
     LinearLayout writeReviewLayout;
     Button writeReviewBtn;
-    Animation fromBottom;
+    Animation fromBottom, fromRight;
 
     private RecyclerView reviewsRecyclerView;
     private List<GameReviews> gameReviewsList;
     private ReviewAdapter reviewAdapter;
 
-    private static final int PERMISSION_CODE = 101;
-    String[] permissions_all = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
     private FusedLocationProviderClient fusedLocationClient;
+    private String lat;
+    private String lon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +104,8 @@ public class GameDetailsActivity extends AppCompatActivity {
         writeReviewBtn = findViewById(R.id.writeReviewBtn);
         noReviewFound = findViewById(R.id.noReviewFound);
         fromBottom = AnimationUtils.loadAnimation(GameDetailsActivity.this, R.anim.from_bottom);
+        fromRight = AnimationUtils.loadAnimation(GameDetailsActivity.this, R.anim.from_right);
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             gameDesc.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
@@ -122,10 +124,7 @@ public class GameDetailsActivity extends AppCompatActivity {
     }
 
     private void refresh() {
-        swipeRefresh.setOnRefreshListener(() -> {
-            getGameData();
-            swipeRefresh.setRefreshing(false);
-        });
+        swipeRefresh.setOnRefreshListener(this::getGameData);
     }
 
     private void recyclerViewInit() {
@@ -164,11 +163,13 @@ public class GameDetailsActivity extends AppCompatActivity {
                         Log.d("SingleRoom", "not success");
                         perfConfig.displayToast("Something going wrong! Please try again!");
                     }
+                    swipeRefresh.setRefreshing(false);
                 }
 
                 @Override
                 public void onFailure(Call<SingleGameContact> call, Throwable t) {
                     Log.d("SingleRoom", "OnFailure");
+                    swipeRefresh.setRefreshing(false);
                 }
             });
 
@@ -197,11 +198,16 @@ public class GameDetailsActivity extends AppCompatActivity {
             super.onBackPressed();
         }
 
+        swipeRefresh.setVisibility(View.VISIBLE);
+
         rating.setRating(response.body().getGameDetailsContact().getRating());
         gameName.setText(response.body().getGameDetailsContact().getName());
         gameDesc.setText(response.body().getGameDetailsContact().getDesc());
         ratingCount.setText(response.body().getGameDetailsContact().getRating() + " (" +
                 response.body().getGameDetailsContact().getRating_count() + ")");
+
+        rating.setAnimation(fromRight);
+        ratingCount.setAnimation(fromRight);
 
         if (response.body().getGameDetailsContact().getBanner() != null) {
             if (!response.body().getGameDetailsContact().getBanner().equals("")) {
@@ -263,7 +269,16 @@ public class GameDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        showBottomDialog();
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+            if (location != null) {
+                lat = String.valueOf(location.getLatitude());
+                lon = String.valueOf(location.getLongitude());
+
+                showBottomDialog();
+            } else {
+                showSettingsAlert();
+            }
+        });
     }
 
     public void showSettingsAlert() {
@@ -296,15 +311,11 @@ public class GameDetailsActivity extends AppCompatActivity {
 
     private final ActivityResultLauncher<String> resultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
-            writeReview();
+            showBottomDialog();
         } else {
             perfConfig.displayToast("Location permission not granted");
         }
     });
-
-    private void writeReview() {
-        showBottomDialog();
-    }
 
     private void showBottomDialog() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(GameDetailsActivity.this, R.style.DialogStyle);
@@ -312,7 +323,7 @@ public class GameDetailsActivity extends AppCompatActivity {
         bottomSheetDialog.setCanceledOnTouchOutside(true);
 
         Button submitReviewBtn = bottomSheetDialog.findViewById(R.id.submitReviewBtn);
-        EditText messageBox = bottomSheetDialog.findViewById(R.id.messageBox);
+        EditText messageBox = bottomSheetDialog.findViewById(R.id.messageBoxReview);
         RatingBar ratingBar = bottomSheetDialog.findViewById(R.id.ratingForNewReview);
 
         assert messageBox != null;
@@ -322,37 +333,51 @@ public class GameDetailsActivity extends AppCompatActivity {
         submitReviewBtn.setOnClickListener(view -> {
             if (messageBox.getText().toString().isEmpty()) {
                 messageBox.setError("Can't Empty");
-                perfConfig.displayToast("Message Box is Empty");
+            } else if (!(ratingBar.getRating() > 0.0)) {
+                perfConfig.displayToast("You don't select rating!");
             } else {
-                submitReview();
+                submitReview(ratingBar.getRating(), messageBox.getText().toString(), bottomSheetDialog, view);
             }
+
         });
 
         bottomSheetDialog.show();
     }
 
-    private void getLatLon(){
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            resultLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
+    private void submitReview(float rating, String message, BottomSheetDialog bottomSheetDialog, View view) {
+        if (!lat.isEmpty() && !lon.isEmpty()) {
+            perfConfig.displayToast("Something went Wrong!");
             return;
         }
+        if (checkConnection()) {
+            perfConfig.LoadingBar(GameDetailsActivity.this, "Please Wait...");
+            ApiInterface apiService = ApiClient.getClient(getApplicationContext()).create(ApiInterface.class);
+            Call<Default_Contact> call = apiService.submitNewReview(game_id, rating, message, lat, lon);
 
-        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-            if (location != null) {
-                double lat = location.getLatitude();
-                double lon = location.getLongitude();
+            call.enqueue(new Callback<Default_Contact>() {
+                @Override
+                public void onResponse(Call<Default_Contact> call, Response<Default_Contact> response) {
+                    if (response.isSuccessful()) {
+                        try {
+                            bottomSheetDialog.cancel();
+                            perfConfig.loadingBar.dismiss();
+                            perfConfig.displaySnackBar(view, response.body().getError());
+                            if (response.body().isSuccess()) {
+                                getGameData();
+                            }
+                        } catch (Exception e) {
+                            Log.d("SubmitReview", "Error " + e.getMessage());
+                        }
+                    }
+                }
 
-                perfConfig.displayToast("lat: " + lat + " Lon: "+ lon);
-            }else {
-                showSettingsAlert();
-            }
-        });
-    }
-
-    private void submitReview() {
-        if (checkConnection()){
-            double lat
+                @Override
+                public void onFailure(Call<Default_Contact> call, Throwable t) {
+                    Log.d("SubmitReview", "OnFailure" + t.getMessage());
+                    perfConfig.loadingBar.dismiss();
+                    perfConfig.displayToast("Something went Wrong!");
+                }
+            });
         }
     }
 

@@ -25,12 +25,6 @@ public class PerfConfig {
     public ProgressDialog loadingBar;
     public Snackbar snackbar;
 
-    public static String OPEN_MY_REQUEST_FRG = "open_my_request_fragment";
-    public static String SET_FRAGMENT = "setFragment";
-
-    public MutableLiveData<String> notificationCount = new MutableLiveData<>();
-    public static int locationAddedCounter = 0;
-
     public PerfConfig(Context context) {
         this.context = context;
         sharedPreferences = context.getSharedPreferences(context.getString(R.string.pref_file), Context.MODE_PRIVATE);
@@ -53,26 +47,6 @@ public class PerfConfig {
 
     public boolean readLoginStatus() {
         return sharedPreferences.getBoolean(context.getString(R.string.pref_login_status), false);
-    }
-
-    public void writeFirstTimeLogin(int status) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(context.getString(R.string.pref_login_firstTime), status);
-        editor.apply();
-    }
-
-    public int readFirstTimeLogin() {
-        return sharedPreferences.getInt(context.getString(R.string.pref_login_firstTime), 0);
-    }
-
-    public void writeOnBoardStatus(boolean status) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(context.getString(R.string.pref_user_onBoarding), status);
-        editor.apply();
-    }
-
-    public boolean readOnBoardStatus() {
-        return sharedPreferences.getBoolean(context.getString(R.string.pref_user_onBoarding), true);
     }
 
     public void writeUserId(String userId) {
@@ -179,28 +153,6 @@ public class PerfConfig {
             snackbar.show();
         } catch (Exception ex) {
             Log.d("Error", "displaySnackBar Error: " + ex.getMessage());
-        }
-    }
-
-    public void displaySnackBarIndefinite(View view, String message) {
-        try {
-            snackbar = Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE);
-            snackbar.setAction("OK", v -> snackbar.dismiss());
-            snackbar.show();
-        } catch (Exception ex) {
-            Log.d("Error", "displaySnackBar Error: " + ex.getMessage());
-        }
-    }
-
-    public void displaySnackBarWithProgressBar(View view, String message) {
-        try {
-            snackbar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT);
-            ViewGroup contentLay = (ViewGroup) snackbar.getView().findViewById(com.karumi.dexter.R.id.snackbar_text).getParent();
-            ProgressBar item = new ProgressBar(context);
-            contentLay.addView(item);
-            snackbar.show();
-        } catch (Exception ex) {
-            Log.d("Error", "displaySnackBarWithProgressBar Error: " + ex.getMessage());
         }
     }
 

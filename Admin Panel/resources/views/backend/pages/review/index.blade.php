@@ -60,17 +60,17 @@
                                                 <td width="20%">
                                                     {{ $item['user']['full_name'] }}
                                                 </td>
-                                                <td class="text-justify" width="30%">
+                                                <td class="text-justify" width="10%">
                                                     {{ $item['game']['name'] }}
                                                 </td>
-                                                <td class="text-center" width="10%">
+                                                <td class="text-center" width="20%">
                                                     {{ $item['comments'] }}
                                                 </td>
-                                                <td class="text-center" width="10%">
+                                                <td class="text-center" width="5%">
                                                     {{ $item['rating'] }} <i class="fa fa-star text-warning"></i>
                                                 </td>
-                                                <td class="text-center" width="10%">
-                                                    {{ $item['location'] }}
+                                                <td class="text-center" width="20%">
+                                                    {{ $item['address'] }}
                                                 </td>
                                                 <td class="text-center" width="20%">
                                                     <form action="{{ route('admin.review.update.status', $item['hashId']) }}" method="POST" class="d-inline-block">

@@ -5,18 +5,17 @@ import com.google.gson.annotations.SerializedName;
 
 public class Default_Contact {
 
+    @SerializedName("success")
+    private boolean success;
+
     @SerializedName("error")
-    private boolean error;
+    private String error;
 
-    @SerializedName("message")
-    private String message;
+    public boolean isSuccess() {
+        return success;
+    }
 
-    public boolean isError() {
+    public String getError() {
         return error;
     }
-
-    public String getMessage() {
-        return message;
-    }
-
 }

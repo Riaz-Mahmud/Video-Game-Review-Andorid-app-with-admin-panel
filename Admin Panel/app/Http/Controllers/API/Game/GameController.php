@@ -36,7 +36,13 @@ class GameController extends APIController
         if($game){
             $game->banner = ImageHelper::generateImage($game->banner, 'medium');
 
-            $allReviews = $game->reviews()->where('status', 'Active')->where('is_deleted', 0)->get()->sortByDesc('id');
+            // get all review of if the status is active and is_deleted is 0 but if review is from the current user then get all review
+            $allReviews = $game->reviews()
+                    ->where(function($query) use ($currentUser){
+                        $query->where('user_id', $currentUser->id)->orWhere('status', 'Active');
+                    })
+                    ->where('is_deleted', 0)
+                    ->get()->sortByDesc('id');
 
             $reviews = array();
 

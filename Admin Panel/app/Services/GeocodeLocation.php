@@ -27,9 +27,16 @@ class GeocodeLocation{
         }
 
         $url = "https://geloky.com/api/geo/reverse-geocode?latlng=$lat,$lng&key=$apiKey&format=google";
-        $response = file_get_contents($url);
 
-        if($response == null || $response == ''){
+        $c = curl_init();
+        curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($c, CURLOPT_URL, $url);
+        $response = curl_exec($c);
+        curl_close($c);
+
+        // $response = file_get_contents($url);
+
+        if($response == null){
             $data['status'] = 'error';
             return $data;
         }

@@ -45,7 +45,7 @@
         android:layout_marginStart="15dp"
         android:numStars="5"
         android:backgroundTint="@color/red"
-        android:stepSize=".1" />
+        android:stepSize=".5" />
 
     <TextView
         android:layout_width="match_parent"
@@ -58,7 +58,7 @@
         android:textSize="15sp" />
 
     <EditText
-        android:id="@+id/messageBox"
+        android:id="@+id/messageBoxReview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -67,7 +67,7 @@
         android:autofillHints="Message"
         android:background="@drawable/round_input_field"
         android:gravity="top|left"
-        android:hint="@string/Login"
+        android:hint="@string/type_your_review"
         android:inputType="textMultiLine|textCapSentences"
         android:lines="5"
         android:maxLines="10"

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Review;
 
+use App\Models\Game;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -44,6 +45,16 @@ class ReviewController extends BackendController
                 Session::flash('error', 'Review status not updated');
                 return redirect()->back();
             }
+
+            $game = Game::find($review->game_id);
+
+            if($game){
+                // update game table rating and rating count
+                $game->rating = $game->reviews()->where('status', 'Active')->where('is_deleted', 0)->avg('rating');
+                $game->rating_count = $game->reviews()->where('status', 'Active')->where('is_deleted', 0)->count();
+                $game->save();
+            }
+
             Session::flash('success', 'Review status updated successfully');
             return redirect()->back();
 

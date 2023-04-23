@@ -1,5 +1,7 @@
 package com.backdoor.vgr.View.Model.Game;
 
+import static maes.tech.intentanim.CustomIntent.customType;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -63,6 +65,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.MyViewHolder> 
             Intent intent = new Intent(mContext, GameDetailsActivity.class);
             intent.putExtra(MainActivity.GAME_ID, contact.get(position).getId());
             mContext.startActivity(intent);
+            customType(mContext, "left-to-right");
         });
 
     }

@@ -114,17 +114,17 @@
                                         @forelse($data['row']['reviews'] as $key => $item)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
-                                                <td width="20%">
+                                                <td>
                                                     {{ $item['user']['first_name'] }} {{ $item['user']['last_name'] }}
                                                 </td>
-                                                <td class="text-justify" width="30%">
+                                                <td class="text-justify" width="20%">
                                                     {!! $item['comments'] !!}
                                                 </td>
                                                 <td class="text-center" width="10%">
                                                     {{ $item['rating'] }}<i class="fa fa-star text-warning"></i>
                                                 </td>
                                                 <td class="text-center" width="10%">
-                                                    {{ $item['location'] }}
+                                                    {{ $item['address'] }}
                                                 </td>
                                                 <td class="text-center" width="10%">
                                                     @if ($item['status'] == 'Active')
