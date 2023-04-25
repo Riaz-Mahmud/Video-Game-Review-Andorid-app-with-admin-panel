@@ -8,6 +8,7 @@ import com.backdoor.vgr.View.Model.LoginSignup.SignupContact;
 import com.backdoor.vgr.View.Model.StatusCheck.CheckStatusContact;
 
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -53,6 +54,12 @@ public interface ApiInterface {
             @Field("message") String message,
             @Field("latitude") String lat,
             @Field("longitude") String lon
+    );
+
+    @DELETE("games/{gameId}/reviews/delete/{reviewId}")
+    Call<Default_Contact> deleteSingleReview(
+            @Path("gameId") String gameId,
+            @Path("reviewId") String reviewId
     );
 
 }

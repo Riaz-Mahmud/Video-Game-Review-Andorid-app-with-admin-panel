@@ -1,5 +1,7 @@
 package com.backdoor.vgr.View.Activity.Auth;
 
+import static maes.tech.intentanim.CustomIntent.customType;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
@@ -134,6 +136,7 @@ public class SignupActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+        customType(SignupActivity.this, "left-to-right");
     }
 
     private void resetData() {

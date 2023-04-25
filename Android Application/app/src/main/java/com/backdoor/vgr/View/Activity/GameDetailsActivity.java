@@ -345,8 +345,8 @@ public class GameDetailsActivity extends AppCompatActivity {
     }
 
     private void submitReview(float rating, String message, BottomSheetDialog bottomSheetDialog, View view) {
-        if (!lat.isEmpty() && !lon.isEmpty()) {
-            perfConfig.displayToast("Something went Wrong!");
+        if (lat.isEmpty() && lon.isEmpty()) {
+            perfConfig.displayToast("Location not working!");
             return;
         }
         if (checkConnection()) {

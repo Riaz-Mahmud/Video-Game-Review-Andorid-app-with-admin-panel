@@ -10,6 +10,9 @@ public class CheckStatusContact {
     @SerializedName("error")
     private String error;
 
+    @SerializedName("message")
+    private String message;
+
     public boolean isSuccess() {
         return success;
     }
@@ -18,4 +21,7 @@ public class CheckStatusContact {
         return error;
     }
 
+    public String getMessage() {
+        return message;
+    }
 }

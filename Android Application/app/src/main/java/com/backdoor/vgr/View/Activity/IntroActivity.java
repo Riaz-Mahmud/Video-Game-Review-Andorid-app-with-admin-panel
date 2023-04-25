@@ -1,5 +1,7 @@
 package com.backdoor.vgr.View.Activity;
 
+import static maes.tech.intentanim.CustomIntent.customType;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -7,10 +9,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,9 +28,6 @@ import retrofit2.Response;
 
 public class IntroActivity extends AppCompatActivity {
 
-    private static final int APP_UPDATE_CODE = 77733;
-    private LinearLayout logoAndName;
-    private Animation rightToLeft;
     private TextView errorTxt;
 
     private boolean isThreadOpen = false;
@@ -49,12 +46,9 @@ public class IntroActivity extends AppCompatActivity {
 
         perfConfig = new PerfConfig(this);
 
-        logoAndName = findViewById(R.id.logoAndName);
         errorTxt = findViewById(R.id.errorTxt);
-        Animation fromRight = AnimationUtils.loadAnimation(this, R.anim.from_right);
-        rightToLeft = AnimationUtils.loadAnimation(this, R.anim.right_to_left);
 
-        if (perfConfig.readLoginStatus()) {
+        if (perfConfig.readLoginStatus() && perfConfig.readAccessToken() != null) {
             checkUserStatus();
         } else {
             new Handler().postDelayed(this::openLoginActivity, 1500);
@@ -65,6 +59,7 @@ public class IntroActivity extends AppCompatActivity {
         Intent intent = new Intent(IntroActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
+        customType(IntroActivity.this, "left-to-right");
     }
 
     private int tryToConnectCount = 0;
@@ -72,6 +67,7 @@ public class IntroActivity extends AppCompatActivity {
     private void checkUserStatus() {
 
         if (checkConnection()) {
+
             ApiInterface apiService = ApiClient.getClient(getApplicationContext()).create(ApiInterface.class);
             Call<CheckStatusContact> call = apiService.checkUserStatus(perfConfig.readUserId());
 
@@ -84,8 +80,10 @@ public class IntroActivity extends AppCompatActivity {
                             Intent intent = new Intent(IntroActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
+                            customType(IntroActivity.this, "left-to-right");
                         } else {
                             perfConfig.displayToast("Please Contact with Admin");
+                            perfConfig.writeLoginStatus(false);
                             openLoginActivity();
                         }
                     } else {
@@ -97,7 +95,7 @@ public class IntroActivity extends AppCompatActivity {
                 public void onFailure(Call<CheckStatusContact> call, Throwable t) {
                     call.cancel();
                     reConnectWithServer();
-
+                    Log.d("IntroStatus", "onFailure");
                 }
             });
         } else {
@@ -138,7 +136,6 @@ public class IntroActivity extends AppCompatActivity {
                     } else {
                         errorTxt.setText("No Internet Connection");
                         errorTxt.setVisibility(View.VISIBLE);
-//                        logoAndName.startAnimation(rightToLeft); //Logo will animate right to left
                     }
                 });
 
@@ -161,7 +158,8 @@ public class IntroActivity extends AppCompatActivity {
             tryToConnectCount++;
         } else {
             errorTxt.setText("Server Not Responding");
-            perfConfig.displayToast("Server Not Responding");
+            perfConfig.displayToast("Server Not Responding! Field to connect with server!");
+            openLoginActivity();
         }
     }
 

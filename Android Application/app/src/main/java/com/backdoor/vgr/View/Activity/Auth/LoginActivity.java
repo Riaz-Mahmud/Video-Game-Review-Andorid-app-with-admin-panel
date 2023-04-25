@@ -1,5 +1,7 @@
 package com.backdoor.vgr.View.Activity.Auth;
 
+import static maes.tech.intentanim.CustomIntent.customType;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.backdoor.vgr.R;
+import com.backdoor.vgr.View.Activity.IntroActivity;
 import com.backdoor.vgr.View.Activity.MainActivity;
 import com.backdoor.vgr.View.Model.LoginSignup.LoginContact;
 import com.backdoor.vgr.View.Model.PerfConfig;
@@ -59,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         binding.SignUpTxt.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
             startActivity(intent);
+            customType(LoginActivity.this, "left-to-right");
         });
     }
 
@@ -90,10 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                         perfConfig.loadingBar.cancel();
                         if (response.isSuccessful()) {
                             if (!response.body().isSuccess()) {
-                                perfConfig.displaySnackBar(v, "Login Successful");
-//                                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
-//                                intent.putExtra(IntroActivity.PHONE_NUMBER, username);
-//                                startActivity(intent);
+                                perfConfig.displaySnackBar(v, response.body().getError());
                             } else {
                                 userResponseSuccessful(response);
                             }
@@ -131,6 +132,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
+        customType(LoginActivity.this, "left-to-right");
     }
 
     private boolean checkEmptyField(String email, String password) {

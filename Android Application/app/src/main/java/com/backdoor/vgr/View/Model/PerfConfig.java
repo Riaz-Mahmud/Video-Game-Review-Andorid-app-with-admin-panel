@@ -96,7 +96,7 @@ public class PerfConfig {
     }
 
     public String readAccessToken() {
-        return sharedPreferences.getString(context.getString(R.string.pref_access_token), "default");
+        return sharedPreferences.getString(context.getString(R.string.pref_access_token), null);
     }
 
     public void writeTokenType(String value) {
