@@ -5,14 +5,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import androidx.lifecycle.MutableLiveData;
 
 import com.backdoor.vgr.R;
 import com.google.android.material.snackbar.Snackbar;
@@ -180,6 +177,18 @@ public class PerfConfig {
         loadingBar.setMessage(message);
         loadingBar.setCanceledOnTouchOutside(false);
         loadingBar.show();
+    }
+
+    public void displaySnackBarWithProgressBar(View view, String message) {
+        try {
+            snackbar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT);
+            ViewGroup contentLay = (ViewGroup) snackbar.getView().findViewById(com.karumi.dexter.R.id.snackbar_text).getParent();
+            ProgressBar item = new ProgressBar(context);
+            contentLay.addView(item);
+            snackbar.show();
+        } catch (Exception ex) {
+            Log.d("Error", "displaySnackBarWithProgressBar Error: " + ex.getMessage());
+        }
     }
 
 }

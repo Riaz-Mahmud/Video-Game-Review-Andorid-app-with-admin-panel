@@ -9,7 +9,7 @@
 
         <variable
             name="dashBoardViewModel"
-            type="com.backdoor.vgr.viewmodel.DashboardViewModel" />
+            type="com.backdoor.vgr.viewmodel.GameViewModel" />
 
     </data>
 
@@ -127,7 +127,7 @@
                             </androidx.recyclerview.widget.RecyclerView>
 
                             <ImageView
-                                android:id="@+id/noDataFound"
+                                android:id="@+id/noDataFoundGames"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"

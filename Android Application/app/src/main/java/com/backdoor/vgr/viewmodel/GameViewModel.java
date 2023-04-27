@@ -1,13 +1,263 @@
 package com.backdoor.vgr.viewmodel;
 
-import android.app.Activity;
+import static com.backdoor.vgr.View.Activity.MainActivity.perfConfig;
 
+import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.view.View;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.backdoor.vgr.Model.DataRepository;
+import com.backdoor.vgr.View.Model.Default_Contact;
+import com.backdoor.vgr.View.Model.Game.GameDetailsContact;
+import com.backdoor.vgr.View.Model.Game.SingleGameContact;
+
+import java.util.List;
 
 public class GameViewModel extends ViewModel {
 
     Activity activity;
+    DataRepository dataRepository;
+    View view;
 
+
+    MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    MutableLiveData<List<GameDetailsContact>> gameDetailsContactList = new MutableLiveData<>();
+    MutableLiveData<SingleGameContact> singleGameContact = new MutableLiveData<>();
+    MutableLiveData<Default_Contact> deleteSingleReviewContact = new MutableLiveData<>();
+    MutableLiveData<Default_Contact> submitReviewContact = new MutableLiveData<>();
+    MutableLiveData<String> fullName = new MutableLiveData<>();
+    MutableLiveData<String> gameName = new MutableLiveData<>();
+    MutableLiveData<Float> rating = new MutableLiveData<>();
+    MutableLiveData<String> ratingCount = new MutableLiveData<>();
+    MutableLiveData<String> gameDesc = new MutableLiveData<>();
+    MutableLiveData<String> gameImage = new MutableLiveData<>();
+    MutableLiveData<Integer> detailsVisibility = new MutableLiveData<>();
+    MutableLiveData<Integer> buttonPress = new MutableLiveData<>();
+    MutableLiveData<Boolean> isMineReview = new MutableLiveData<>(true);
+
+    public MutableLiveData<String> getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName.setValue(fullName);
+    }
+
+    public void setUserInfo() {
+        setFullName("Welcome " + perfConfig.readUserName());
+    }
+
+    public void setFragmentActivity(FragmentActivity activity) {
+        this.activity = activity;
+    }
+
+
+    public void getAllGameList() {
+        if (checkConnection()) {
+
+            dataRepository = DataRepository.getInstance(activity.getApplicationContext());
+            dataRepository = new DataRepository((DataRepository.GetAllGamesTask) body -> {
+                if (body != null) {
+                    if (body.isSuccess()) {
+                        gameDetailsContactList.postValue(body.getGameDetailsContactList());
+                    } else {
+                        perfConfig.displaySnackBar(view, body.getError());
+                    }
+                } else {
+                    perfConfig.displaySnackBar(view, "Somethings went wrong!");
+                }
+            }, activity.getApplicationContext());
+            dataRepository.getGamesList();
+        }
+    }
+
+    public void getSingleGameDetails(String gameId) {
+        if (checkConnection()) {
+
+            dataRepository = DataRepository.getInstance(activity.getApplicationContext());
+            dataRepository = new DataRepository((DataRepository.GetSingleGameDetailsTask) body -> {
+                if (body != null) {
+                    if (body.isSuccess()) {
+                        setDetailsVisibility(1);
+                        setSingleGameDetails(body.getGameDetailsContact());
+                        singleGameContact.postValue(body);
+                    } else {
+                        perfConfig.displayToast(body.getError());
+                        activity.onBackPressed();
+                    }
+                } else {
+                    perfConfig.displayToast("Somethings went wrong!");
+                    activity.onBackPressed();
+                }
+            }, activity.getApplicationContext());
+            dataRepository.getSingleGameDetails(gameId);
+        }
+    }
+
+    public void deleteSingleReview(String gameId, String reviewId) {
+        if (checkConnection()) {
+
+            perfConfig.displaySnackBarWithProgressBar(view, "Please wait...");
+
+            dataRepository = DataRepository.getInstance(activity.getApplicationContext());
+            dataRepository = new DataRepository((DataRepository.GetDeleteReviewTask) body -> {
+                perfConfig.snackbar.dismiss();
+                if (body != null) {
+                    if (body.isSuccess()) {
+                        deleteSingleReviewContact.postValue(body);
+                    } else {
+                        perfConfig.displayToast(body.getError());
+                    }
+                } else {
+                    perfConfig.displayToast("Somethings went wrong!");
+                }
+            }, activity.getApplicationContext());
+            dataRepository.deleteSingleReview(gameId, reviewId);
+        }
+    }
+
+    public void submitUserReview(String gameId, float rating, String message, String lat, String lon) {
+        if (checkConnection()) {
+            perfConfig.displaySnackBarWithProgressBar(view, "Please wait...");
+
+            dataRepository = DataRepository.getInstance(activity.getApplicationContext());
+            dataRepository = new DataRepository((DataRepository.SubmitReviewTask) body -> {
+                perfConfig.snackbar.dismiss();
+                if (body != null) {
+                    if (body.isSuccess()) {
+                        submitReviewContact.postValue(body);
+                    } else {
+                        perfConfig.displayToast(body.getError());
+                    }
+                } else {
+                    perfConfig.displayToast("Somethings went wrong!");
+                }
+            }, activity.getApplicationContext());
+            dataRepository.submitUserReview(gameId, rating, message, lat, lon);
+        }
+    }
+
+    private void setSingleGameDetails(GameDetailsContact data) {
+        setRating(data.getRating());
+        setRatingCount(data.getRating() + "(" + data.getRating_count() + ")");
+        setGameName(data.getName());
+        setGameDesc(data.getDesc());
+        if (data.getBanner() != null) {
+            if (!data.getBanner().equals("")) {
+                setGameImage(data.getBanner());
+            }
+        }
+
+        setIsMineReview(data.is_mine_review());
+
+        buttonPress.setValue(1);
+    }
+
+
+    public MutableLiveData<String> getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(MutableLiveData<String> errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public MutableLiveData<String> getGameName() {
+        return gameName;
+    }
+
+    public void setGameName(String gameName) {
+        this.gameName.setValue(gameName);
+    }
+
+    public MutableLiveData<Float> getRating() {
+        return rating;
+    }
+
+    public void setRating(Float rating) {
+        this.rating.setValue(rating);
+    }
+
+    public MutableLiveData<String> getGameDesc() {
+        return gameDesc;
+    }
+
+    public void setGameDesc(String gameDesc) {
+        this.gameDesc.setValue(gameDesc);
+    }
+
+    public MutableLiveData<String> getGameImage() {
+        return gameImage;
+    }
+
+    public void setGameImage(String gameImage) {
+        this.gameImage.setValue(gameImage);
+    }
+
+    public MutableLiveData<String> getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(String ratingCount) {
+        this.ratingCount.setValue(ratingCount);
+    }
+
+    public MutableLiveData<Integer> getDetailsVisibility() {
+        return detailsVisibility;
+    }
+
+    public void setDetailsVisibility(Integer detailsVisibility) {
+        this.detailsVisibility.setValue(detailsVisibility);
+    }
+
+    public MutableLiveData<Boolean> getIsMineReview() {
+        return isMineReview;
+    }
+
+    public void setIsMineReview(Boolean isMineReview) {
+        this.isMineReview.setValue(isMineReview);
+    }
+
+    public MutableLiveData<List<GameDetailsContact>> getGameDetailsContactList() {
+        if (gameDetailsContactList == null) {
+            gameDetailsContactList = new MutableLiveData<>();
+        }
+        return gameDetailsContactList;
+    }
+
+    public MutableLiveData<SingleGameContact> getSingleGameContact() {
+        if (singleGameContact == null) {
+            singleGameContact = new MutableLiveData<>();
+        }
+        return singleGameContact;
+    }
+
+    public MutableLiveData<Default_Contact> getDeleteSingleReviewContact() {
+        if (deleteSingleReviewContact == null) {
+            deleteSingleReviewContact = new MutableLiveData<>();
+        }
+        return deleteSingleReviewContact;
+    }
+
+    public MutableLiveData<Default_Contact> getSubmitReviewContact() {
+        if (submitReviewContact == null) {
+            submitReviewContact = new MutableLiveData<>();
+        }
+        return submitReviewContact;
+    }
+
+    public MutableLiveData<Integer> getButtonTask() {
+        if (buttonPress == null) {
+            buttonPress = new MutableLiveData<>();
+        }
+        return buttonPress;
+    }
 
     public Activity getActivity() {
         return activity;
@@ -15,5 +265,25 @@ public class GameViewModel extends ViewModel {
 
     public void setActivity(Activity activity) {
         this.activity = activity;
+    }
+
+    public View getView() {
+        return view;
+    }
+
+    public void setView(View view) {
+        this.view = view;
+    }
+
+    public boolean checkConnection() {
+        ConnectivityManager manager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert manager != null;
+        NetworkInfo activeNetwork = manager.getActiveNetworkInfo();
+        if (activeNetwork == null) {
+            errorMessage.setValue("No Internet Connection");
+            return false;
+        } else {
+            return true;
+        }
     }
 }

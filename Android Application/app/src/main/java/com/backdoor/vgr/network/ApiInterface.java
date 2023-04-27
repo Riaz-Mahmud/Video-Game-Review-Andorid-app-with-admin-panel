@@ -12,11 +12,13 @@ import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface ApiInterface {
 
+    @Headers({"Accept:application/json"})
     @FormUrlEncoded
     @POST("user/checkStatus")
     Call<CheckStatusContact> checkUserStatus(
@@ -41,7 +43,7 @@ public interface ApiInterface {
     );
 
     @GET("games/list")
-    Call<GameContact> getUserHistory();
+    Call<GameContact> getGamesList();
 
     @GET("games/list/{gameId}")
     Call<SingleGameContact> getSingleGameData(@Path("gameId") String gameId);
