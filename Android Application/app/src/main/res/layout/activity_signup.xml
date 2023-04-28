@@ -108,18 +108,18 @@
                     android:textSize="14sp" />
 
                 <EditText
-                    android:id="@+id/usernameTxt"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="3dp"
                     android:layout_marginEnd="10dp"
+                    android:autoText="false"
                     android:autofillHints="@string/type_your_username"
                     android:background="@drawable/edit_text_round_border"
                     android:hint="@string/type_your_username"
                     android:inputType="text"
+                    android:text="@={authViewModel.username}"
                     android:textAllCaps="false"
-                    android:autoText="false"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
@@ -145,7 +145,6 @@
                     android:weightSum="2">
 
                     <EditText
-                        android:id="@+id/firstNameTxt"
                         android:layout_width="0dp"
                         android:layout_height="55dp"
                         android:layout_marginStart="10dp"
@@ -156,11 +155,11 @@
                         android:background="@drawable/edit_text_round_border"
                         android:hint="@string/first_name"
                         android:inputType="textPersonName"
+                        android:text="@={authViewModel.firstName}"
                         android:textColor="@color/black"
                         android:textSize="18sp" />
 
                     <EditText
-                        android:id="@+id/lastNameTxt"
                         android:layout_width="0dp"
                         android:layout_height="55dp"
                         android:layout_marginStart="10dp"
@@ -171,6 +170,7 @@
                         android:background="@drawable/edit_text_round_border"
                         android:hint="@string/last_name"
                         android:inputType="textPersonName"
+                        android:text="@={authViewModel.lastName}"
                         android:textColor="@color/black"
                         android:textSize="18sp" />
 
@@ -188,7 +188,6 @@
 
 
                 <EditText
-                    android:id="@+id/emailTxt"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
                     android:layout_marginStart="10dp"
@@ -199,6 +198,7 @@
                     android:gravity="center_vertical"
                     android:hint="@string/enter_your_email_address"
                     android:inputType="textEmailAddress"
+                    android:text="@={authViewModel.email}"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
@@ -236,7 +236,6 @@
                     android:textSize="14sp" />
 
                 <EditText
-                    android:id="@+id/passwordTxt"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
                     android:layout_marginStart="10dp"
@@ -246,6 +245,7 @@
                     android:background="@drawable/edit_text_round_border"
                     android:hint="@string/enter_your_password"
                     android:inputType="textPassword"
+                    android:text="@={authViewModel.password}"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
@@ -260,7 +260,6 @@
                     android:textSize="14sp" />
 
                 <EditText
-                    android:id="@+id/rePasswordTxt"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
                     android:layout_marginStart="10dp"
@@ -270,6 +269,7 @@
                     android:background="@drawable/edit_text_round_border"
                     android:hint="@string/enter_your_password"
                     android:inputType="textPassword"
+                    android:text="@={authViewModel.confirmPass}"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
@@ -281,9 +281,9 @@
                     android:orientation="horizontal">
 
                     <CheckBox
-                        android:id="@+id/privacyCheckBox"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
+                        android:checked="@={authViewModel.privacyCheck}"
                         android:fontFamily="@font/roboto"
                         android:text="@string/agree_with_privacy_amp_policy"
                         android:textSize="14sp" />
@@ -304,12 +304,13 @@
                     app:cardElevation="8dp">
 
                     <Button
-                        android:id="@+id/signUpButton"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:background="@drawable/background_button"
                         android:backgroundTint="@color/red"
+                        android:enabled="@{authViewModel.signUpBtnEnable}"
                         android:fontFamily="@font/roboto"
+                        android:onClick="@{()->authViewModel.onTapUserSignupBtn()}"
                         android:text="@string/Sign_up"
                         android:textColor="@color/white"
                         android:textSize="18sp" />

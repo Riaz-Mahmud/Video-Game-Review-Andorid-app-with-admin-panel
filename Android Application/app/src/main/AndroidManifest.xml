@@ -20,7 +20,7 @@
         android:theme="@style/DefaultTheme"
         tools:targetApi="31">
         <activity
-            android:name=".View.Activity.GameDetailsActivity"
+            android:name=".View.Activity.Game.GameDetailsActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

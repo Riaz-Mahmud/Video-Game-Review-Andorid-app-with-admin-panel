@@ -3,7 +3,7 @@ package com.backdoor.vgr.network;
 import android.content.Context;
 import android.util.Log;
 
-import com.backdoor.vgr.Model.AESCrypt;
+import com.backdoor.vgr.Model.Encryption.AESCrypt;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

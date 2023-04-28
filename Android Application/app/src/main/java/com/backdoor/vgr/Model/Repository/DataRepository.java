@@ -1,15 +1,24 @@
-package com.backdoor.vgr.Model;
+package com.backdoor.vgr.Model.Repository;
 
 import static com.backdoor.vgr.View.Activity.IntroActivity.perfConfig;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.backdoor.vgr.Model.RoomDB.GameDao;
+import com.backdoor.vgr.Model.RoomDB.GameDataEntity;
+import com.backdoor.vgr.View.Activity.IntroActivity;
 import com.backdoor.vgr.View.Model.Default_Contact;
 import com.backdoor.vgr.View.Model.Game.GameContact;
+import com.backdoor.vgr.View.Model.Game.GameDetailsContact;
 import com.backdoor.vgr.View.Model.Game.SingleGameContact;
+import com.backdoor.vgr.View.Model.LoginSignup.LoginContact;
+import com.backdoor.vgr.View.Model.LoginSignup.SignupContact;
 import com.backdoor.vgr.View.Model.StatusCheck.CheckStatusContact;
 import com.backdoor.vgr.network.ApiClient;
 import com.backdoor.vgr.network.ApiInterface;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -20,6 +29,8 @@ public class DataRepository {
     public static DataRepository dataRepository;
     private final ApiInterface apiInterface;
 
+    public GetLoginTask getLoginTask;
+    public GetSignupTask getSignupTask;
     public IsCheckUserStatusTask isCheckUserStatusTask;
     public GetAllGamesTask getAllGameTask;
     public GetSingleGameDetailsTask getSingleGameDetailsTask;
@@ -35,6 +46,16 @@ public class DataRepository {
 
     public DataRepository(Context context) {
         apiInterface = ApiClient.getClient(context).create(ApiInterface.class);
+    }
+
+    public DataRepository(GetLoginTask listener, Context context) {
+        apiInterface = ApiClient.getClient(context).create(ApiInterface.class);
+        this.getLoginTask = listener;
+    }
+
+    public DataRepository(GetSignupTask listener, Context context) {
+        apiInterface = ApiClient.getClient(context).create(ApiInterface.class);
+        this.getSignupTask = listener;
     }
 
     public DataRepository(IsCheckUserStatusTask listener, Context context) {
@@ -62,8 +83,45 @@ public class DataRepository {
         this.submitReviewTask = listener;
     }
 
-    public void checkUserStatus() {
+    public void userLogin(String email, String password) {
+        apiInterface.getUserLoginResponse(email, password).enqueue(new Callback<LoginContact>() {
+            @Override
+            public void onResponse(Call<LoginContact> call, Response<LoginContact> response) {
+                if (response.isSuccessful()) {
+                    getLoginTask.getLoginTaskResponse(response.body());
+                } else {
+                    getLoginTask.getLoginTaskResponse(null);
+                }
+            }
 
+            @Override
+            public void onFailure(Call<LoginContact> call, Throwable t) {
+                call.cancel();
+                getLoginTask.getLoginTaskResponse(null);
+            }
+        });
+    }
+
+    public void userSignup(String firstName, String lastName, String email, String username, String rePassword) {
+        apiInterface.getUserSignUpResponse(firstName, lastName, username, email, rePassword).enqueue(new Callback<SignupContact>() {
+            @Override
+            public void onResponse(Call<SignupContact> call, Response<SignupContact> response) {
+                if (response.isSuccessful()) {
+                    getSignupTask.getSignupTaskResponse(response.body());
+                } else {
+                    getSignupTask.getSignupTaskResponse(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SignupContact> call, Throwable t) {
+                call.cancel();
+                getSignupTask.getSignupTaskResponse(null);
+            }
+        });
+    }
+
+    public void checkUserStatus() {
         apiInterface.checkUserStatus(perfConfig.readUserId()).enqueue(new Callback<CheckStatusContact>() {
             @Override
             public void onResponse(Call<CheckStatusContact> call, Response<CheckStatusContact> response) {
@@ -92,6 +150,7 @@ public class DataRepository {
             public void onResponse(Call<GameContact> call, Response<GameContact> response) {
                 if (response.isSuccessful()) {
                     getAllGameTask.getAllGameListTask(response.body());
+                    saveRoomDB(response.body().getGameDetailsContactList());
                 } else {
                     getAllGameTask.getAllGameListTask(null);
                 }
@@ -103,6 +162,65 @@ public class DataRepository {
                 getAllGameTask.getAllGameListTask(null);
             }
         });
+    }
+
+    private void saveRoomDB(List<GameDetailsContact> launches) {
+
+        GameDao gameDao = IntroActivity.gamesDatabase.getDao();
+
+        new Thread(() -> {
+            try {
+                int count = gameDao.getGameCount();
+                Log.d("RoomDBCat", "getGameCount value: " + count);
+                if (count > 0) {
+                    int save = gameDao.deleteAllGames();
+                    Log.d("RoomDBCat", "deleteAllGames value: " + save);
+                    if (save > 0) {
+                        insertIntoDB(gameDao, launches);
+                    } else {
+                        Log.d("RoomDBCat", "deleteAllGames else");
+                    }
+                } else {
+                    insertIntoDB(gameDao, launches);
+                }
+            } catch (Exception e) {
+                Log.d("RoomDBCat", "DeleteAll Error: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    private void insertIntoDB(GameDao gameDao, List<GameDetailsContact> launches) {
+        new Thread(() -> {
+            if (launches != null) {
+                int i = 1;
+
+                for (GameDetailsContact item : launches) {
+                    try {
+                        long dataInsert = gameDao.insertGame(new GameDataEntity(
+                                i++,
+                                item.getId(),
+                                item.getName(),
+                                item.getDesc(),
+                                String.valueOf(item.getRating()),
+                                item.getRating_count(),
+                                item.is_mine_review(),
+                                item.getBanner()
+                        ));
+
+                        if (dataInsert > 0) {
+                            Log.d("RoomDBCat", "Saved: " + item.getName());
+                        } else {
+                            Log.d("RoomDBCat", "Not Saved: " + item.getName());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.d("RoomDBCat", "Data Store: " + item.getName() + " Error: " + e.getMessage());
+                    }
+
+                    Log.d("RoomDBCat", "Data Store: " + item.getName());
+                }
+            }
+        }).start();
     }
 
     public void getSingleGameDetails(String gameId) {
@@ -181,5 +299,13 @@ public class DataRepository {
 
     public interface SubmitReviewTask {
         void getSubmitReviewTask(Default_Contact body);
+    }
+
+    public interface GetLoginTask {
+        void getLoginTaskResponse(LoginContact body);
+    }
+
+    public interface GetSignupTask {
+        void getSignupTaskResponse(SignupContact body);
     }
 }

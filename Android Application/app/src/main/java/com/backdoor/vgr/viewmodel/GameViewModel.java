@@ -9,15 +9,23 @@ import android.net.NetworkInfo;
 import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-import com.backdoor.vgr.Model.DataRepository;
+import com.backdoor.vgr.Model.Repository.DataRepository;
+import com.backdoor.vgr.Model.RoomDB.GameDao;
+import com.backdoor.vgr.Model.RoomDB.GameDataEntity;
+import com.backdoor.vgr.View.Activity.IntroActivity;
 import com.backdoor.vgr.View.Model.Default_Contact;
 import com.backdoor.vgr.View.Model.Game.GameDetailsContact;
 import com.backdoor.vgr.View.Model.Game.SingleGameContact;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GameViewModel extends ViewModel {
 
@@ -40,6 +48,7 @@ public class GameViewModel extends ViewModel {
     MutableLiveData<Integer> detailsVisibility = new MutableLiveData<>();
     MutableLiveData<Integer> buttonPress = new MutableLiveData<>();
     MutableLiveData<Boolean> isMineReview = new MutableLiveData<>(true);
+    LiveData<List<GameDataEntity>> gameData = new MutableLiveData<>();
 
     public MutableLiveData<String> getFullName() {
         return fullName;
@@ -57,10 +66,8 @@ public class GameViewModel extends ViewModel {
         this.activity = activity;
     }
 
-
     public void getAllGameList() {
         if (checkConnection()) {
-
             dataRepository = DataRepository.getInstance(activity.getApplicationContext());
             dataRepository = new DataRepository((DataRepository.GetAllGamesTask) body -> {
                 if (body != null) {
@@ -74,8 +81,28 @@ public class GameViewModel extends ViewModel {
                 }
             }, activity.getApplicationContext());
             dataRepository.getGamesList();
+        } else {
+            // Fetch data from the local RoomDB
+            GameDao gameDao = IntroActivity.gamesDatabase.getDao();
+            LiveData<List<GameDataEntity>> gameData = gameDao.getAllGame();
+            gameData.observe((LifecycleOwner) activity, (Observer<List<GameDataEntity>>) gameDataEntities -> {
+                List<GameDetailsContact> gameDetailsContacts = new ArrayList<>();
+                for (GameDataEntity gameDataEntity : gameDataEntities) {
+                    GameDetailsContact gameDetailsContact = new GameDetailsContact();
+                    gameDetailsContact.setId(gameDataEntity.getUid());
+                    gameDetailsContact.setName(gameDataEntity.getTitle());
+                    gameDetailsContact.setDesc(gameDataEntity.getDesc());
+                    gameDetailsContact.setRating(Float.parseFloat(Objects.requireNonNull(gameDataEntity.getRating())));
+                    gameDetailsContact.setRating_count(gameDataEntity.getRatingCount());
+                    gameDetailsContact.setIs_mine_review(Boolean.TRUE.equals(gameDataEntity.isMineReview()));
+                    gameDetailsContact.setBanner(gameDataEntity.getImage());
+                    gameDetailsContacts.add(gameDetailsContact);
+                }
+                gameDetailsContactList.setValue(gameDetailsContacts);
+            });
         }
     }
+
 
     public void getSingleGameDetails(String gameId) {
         if (checkConnection()) {
@@ -84,7 +111,6 @@ public class GameViewModel extends ViewModel {
             dataRepository = new DataRepository((DataRepository.GetSingleGameDetailsTask) body -> {
                 if (body != null) {
                     if (body.isSuccess()) {
-                        setDetailsVisibility(1);
                         setSingleGameDetails(body.getGameDetailsContact());
                         singleGameContact.postValue(body);
                     } else {
@@ -97,6 +123,26 @@ public class GameViewModel extends ViewModel {
                 }
             }, activity.getApplicationContext());
             dataRepository.getSingleGameDetails(gameId);
+        } else {
+            GameDao gameDao = IntroActivity.gamesDatabase.getDao();
+            try {
+                LiveData<GameDataEntity> gameData = gameDao.getGameById(Integer.parseInt(gameId));
+                gameData.observe((LifecycleOwner) activity, gameDataEntity -> {
+                    GameDetailsContact gameDetailsContact = new GameDetailsContact();
+                    gameDetailsContact.setId(gameDataEntity.getUid());
+                    gameDetailsContact.setName(gameDataEntity.getTitle());
+                    gameDetailsContact.setDesc(gameDataEntity.getDesc());
+                    gameDetailsContact.setRating(Float.parseFloat(Objects.requireNonNull(gameDataEntity.getRating())));
+                    gameDetailsContact.setRating_count(gameDataEntity.getRatingCount());
+                    gameDetailsContact.setIs_mine_review(Boolean.TRUE.equals(gameDataEntity.isMineReview()));
+                    gameDetailsContact.setBanner(gameDataEntity.getImage());
+
+                    setSingleGameDetails(gameDetailsContact);
+                });
+            } catch (Exception e) {
+                perfConfig.displayToast("Something went wrong!");
+                activity.onBackPressed();
+            }
         }
     }
 
@@ -144,6 +190,7 @@ public class GameViewModel extends ViewModel {
     }
 
     private void setSingleGameDetails(GameDetailsContact data) {
+        setDetailsVisibility(1);
         setRating(data.getRating());
         setRatingCount(data.getRating() + "(" + data.getRating_count() + ")");
         setGameName(data.getName());
@@ -154,19 +201,16 @@ public class GameViewModel extends ViewModel {
             }
         }
 
-        setIsMineReview(data.is_mine_review());
+        if (checkConnection()) {
+            setIsMineReview(data.is_mine_review());
+        } else {
+            setIsMineReview(true);
+        }
+
 
         buttonPress.setValue(1);
     }
 
-
-    public MutableLiveData<String> getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(MutableLiveData<String> errorMessage) {
-        this.errorMessage = errorMessage;
-    }
 
     public MutableLiveData<String> getGameName() {
         return gameName;
@@ -252,13 +296,6 @@ public class GameViewModel extends ViewModel {
         return submitReviewContact;
     }
 
-    public MutableLiveData<Integer> getButtonTask() {
-        if (buttonPress == null) {
-            buttonPress = new MutableLiveData<>();
-        }
-        return buttonPress;
-    }
-
     public Activity getActivity() {
         return activity;
     }
@@ -280,7 +317,7 @@ public class GameViewModel extends ViewModel {
         assert manager != null;
         NetworkInfo activeNetwork = manager.getActiveNetworkInfo();
         if (activeNetwork == null) {
-            errorMessage.setValue("No Internet Connection");
+            perfConfig.displaySnackBar(view, "No Internet Connection");
             return false;
         } else {
             return true;

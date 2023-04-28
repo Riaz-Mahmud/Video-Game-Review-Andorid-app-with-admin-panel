@@ -15,13 +15,29 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.backdoor.vgr.Model.DataRepository;
+import com.backdoor.vgr.Model.Repository.DataRepository;
 import com.backdoor.vgr.R;
 import com.backdoor.vgr.View.Activity.Auth.LoginActivity;
+import com.backdoor.vgr.View.Activity.Auth.SignupActivity;
 import com.backdoor.vgr.View.Activity.MainActivity;
+import com.backdoor.vgr.View.Model.LoginSignup.ResultContact;
 import com.backdoor.vgr.View.Model.StatusCheck.CheckStatusContact;
 
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
+
+import java.util.regex.Pattern;
+
 public class AuthViewModel extends ViewModel {
+
+    private static final Pattern PASSWORD_PATTERN =
+            Pattern.compile("^" +
+//                    "(?=.*[0-9])" +     //at least 1 digit
+//                    "(?=.*[a-z])" +     //at least 1 lower case
+//                    "(?=.*[A-Z])" +     //at least 1 upper case
+//                    "(?=.*[@#$%^&+=])"+ //at least 1 special case
+                    "(?=\\S+$)" +       //no white spaces
+                    ".{5,}" +           //at leaser 5 character
+                    "$");
 
     Activity activity;
     private View view;
@@ -31,6 +47,10 @@ public class AuthViewModel extends ViewModel {
     MutableLiveData<String> errorMessage = new MutableLiveData<>();
     MutableLiveData<Integer> errorMessageColor = new MutableLiveData<>();
     MutableLiveData<Integer> errorMsgShow = new MutableLiveData<>();
+    MutableLiveData<Boolean> signUpBtnEnable = new MutableLiveData<>(true);
+    public String email = "", password = "", confirmPass = "";
+    public String username = "", firstName = "", lastName = "";
+    public boolean privacyCheck = false;
 
     private int tryToConnectCount = 0;
     private boolean isThreadOpen = false;
@@ -56,6 +76,98 @@ public class AuthViewModel extends ViewModel {
         activity.startActivity(intent);
         activity.finish();
         customType(activity, "left-to-right");
+    }
+
+    public void onTapSignupBtn() {
+        Intent intent = new Intent(activity, SignupActivity.class);
+        activity.startActivity(intent);
+        customType(activity, "left-to-right");
+    }
+
+    public void userLogin() {
+        if (checkConnection()) {
+            try {
+                UIUtil.hideKeyboard(activity);
+
+                perfConfig.displaySnackBarWithProgressBar(view, "Checking...");
+
+                dataRepository = DataRepository.getInstance(activity.getApplicationContext());
+                dataRepository = new DataRepository((DataRepository.GetLoginTask) body -> {
+                    perfConfig.snackbar.dismiss();
+                    if (body != null) {
+                        perfConfig.displaySnackBar(view, body.getError());
+                        if (body.isSuccess()) {
+                            userResponseSuccessful(body.getResultContact());
+                            openMainActivity();
+                        }
+                    } else {
+                        perfConfig.displaySnackBar(view, "Something wrong! Please Try again!");
+                    }
+                }, activity.getApplicationContext());
+                dataRepository.userLogin(email, password);
+            } catch (Exception e) {
+                perfConfig.displaySnackBar(view, "Something wrong! Please Try again!");
+            }
+        }
+    }
+
+    public void userSignup() {
+        if (checkConnection()) {
+            setSignUpBtnEnable(false);
+            try {
+                UIUtil.hideKeyboard(activity);
+
+                perfConfig.displaySnackBarWithProgressBar(view, "Creating...");
+                dataRepository = DataRepository.getInstance(activity.getApplicationContext());
+                dataRepository = new DataRepository((DataRepository.GetSignupTask) body -> {
+                    perfConfig.snackbar.dismiss();
+                    if (body != null) {
+                        perfConfig.displaySnackBar(view, body.getError());
+                        if (body.isSuccess()) {
+                            userResponseSuccessful(body.getResultContact());
+                            resetData();
+                            perfConfig.showSuccessDialog(activity);
+                            new Handler().postDelayed(this::openMainActivityWithClearAllTree, 2000);
+                        } else {
+                            perfConfig.showErrorDialog(activity);
+                            setSignUpBtnEnable(true);
+                        }
+                    } else {
+                        perfConfig.showErrorDialog(activity);
+                        setSignUpBtnEnable(true);
+                        perfConfig.displaySnackBar(view, "Something wrong! Please Try again!");
+                    }
+                }, activity.getApplicationContext());
+                dataRepository.userSignup(firstName, lastName, email, username, confirmPass);
+            } catch (Exception e) {
+                setSignUpBtnEnable(true);
+                perfConfig.displaySnackBar(view, "Something wrong! Please Try again!");
+                perfConfig.showErrorDialog(activity);
+            }
+        }
+    }
+
+    private void openMainActivityWithClearAllTree() {
+        Intent intent = new Intent(activity, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        activity.startActivity(intent);
+        activity.finish();
+        customType(activity, "left-to-right");
+    }
+
+    private void resetData() {
+        email = firstName = lastName = password = confirmPass = username = "";
+        privacyCheck = false;
+    }
+
+    private void userResponseSuccessful(ResultContact body) {
+        perfConfig.writeLoginStatus(true);
+        perfConfig.writeUserId(body.getUserContact().getUser_id());
+        perfConfig.writeUserName(body.getUserContact().getFirst_name() + " " + body.getUserContact().getLast_name());
+        perfConfig.writeEmail(body.getUserContact().getEmail());
+        perfConfig.writeAccessToken(body.getToken());
+        perfConfig.writeTokenType(body.getTokenType());
+        perfConfig.writeTokenExp(body.getExpires_in());
     }
 
     private void checkUserStatus() {
@@ -90,10 +202,11 @@ public class AuthViewModel extends ViewModel {
             errorMessage.setValue("No Internet Connection");
             errorMessageColor.setValue(R.color.red);
             errorMsgShow.setValue(1);
-            if (!isThreadOpen) {
-                isThreadOpen = true;
-                startThread();
-            }
+            new Handler().postDelayed(this::openMainActivity, 2000);
+//            if (!isThreadOpen) {
+//                isThreadOpen = true;
+//                startThread();
+//            }
         }
     }
 
@@ -191,6 +304,79 @@ public class AuthViewModel extends ViewModel {
         this.errorMessageColor.setValue(errorMessageColor);
     }
 
+    public MutableLiveData<Boolean> getSignUpBtnEnable() {
+        return signUpBtnEnable;
+    }
+
+    public void setSignUpBtnEnable(Boolean signUpBtnEnable) {
+        this.signUpBtnEnable.setValue(signUpBtnEnable);
+    }
+
+    public void onTapUserSignupBtn() {
+        if (checkSignupEmptyField()) {
+            userSignup();
+        }
+    }
+
+    private boolean checkSignupEmptyField() {
+
+        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPass.isEmpty()) {
+            if (confirmPass.isEmpty()) {
+                perfConfig.displaySnackBar(view, "Confirm Password is empty");
+            }
+            if (password.isEmpty()) {
+                perfConfig.displaySnackBar(view, "Password is empty");
+            }
+            if (email.isEmpty()) {
+                perfConfig.displaySnackBar(view, "Email is empty");
+            }
+            if (lastName.isEmpty()) {
+                perfConfig.displaySnackBar(view, "Last Name is empty");
+            }
+            if (firstName.isEmpty()) {
+                perfConfig.displaySnackBar(view, "First Name is empty");
+            }
+            if (username.isEmpty()) {
+                perfConfig.displaySnackBar(view, "Username is empty");
+            }
+            return false;
+        } else if (!PASSWORD_PATTERN.matcher(password.trim()).matches()) {
+            perfConfig.displaySnackBarLong(view, "Password too week" +
+                    "\n*at least 5 character");
+            return false;
+        } else if (!password.equals(confirmPass)) {
+            perfConfig.displaySnackBarLong(view, "Confirm Password Not Match");
+            return false;
+        } else if (!privacyCheck) {
+            perfConfig.displaySnackBarLong(view, "AGREE with Privacy & Policy");
+            return false;
+        } else if (!isEmailValid(email)) {
+            perfConfig.displaySnackBar(view, "Email is not valid");
+            return false;
+        }
+        return true;
+    }
+
+
+    public void onTapLoginBtn() {
+        if (checkEmptyField()) {
+            userLogin();
+        }
+    }
+
+    private boolean checkEmptyField() {
+        if (email.isEmpty() || password.isEmpty()) {
+            if (password.isEmpty()) {
+                perfConfig.displaySnackBar(view, "Password is empty");
+            }
+            if (email.isEmpty()) {
+                perfConfig.displaySnackBar(view, "Email is empty");
+            }
+            return false;
+        }
+        return true;
+    }
+
     public View getView() {
         return view;
     }
@@ -204,7 +390,7 @@ public class AuthViewModel extends ViewModel {
         assert manager != null;
         NetworkInfo activeNetwork = manager.getActiveNetworkInfo();
         if (activeNetwork == null) {
-            errorMessage.setValue("No Internet Connection");
+            perfConfig.displayToast("No Internet Connection");
             return false;
         } else {
             return true;

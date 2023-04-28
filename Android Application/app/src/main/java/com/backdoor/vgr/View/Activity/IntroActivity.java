@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.backdoor.vgr.Model.RoomDB.GameDao;
+import com.backdoor.vgr.Model.RoomDB.GamesDatabase;
 import com.backdoor.vgr.R;
 import com.backdoor.vgr.View.Model.PerfConfig;
 import com.backdoor.vgr.databinding.ActivityIntroBinding;
@@ -16,6 +18,9 @@ public class IntroActivity extends AppCompatActivity {
 
     private boolean isThreadOpen = false;
     private final Handler mainHandler = new Handler();
+
+    public static GamesDatabase gamesDatabase;
+    public GameDao gameDao = null;
 
     public static PerfConfig perfConfig;
     public static String PHONE_NUMBER = "phone_number";
@@ -36,6 +41,9 @@ public class IntroActivity extends AppCompatActivity {
         viewModel.setView(binding.getRoot());
 
         perfConfig = new PerfConfig(this);
+
+        gamesDatabase = GamesDatabase.Companion.getDatabase(this);
+        gameDao = GamesDatabase.Companion.getDatabase(this).getDao();
 
         viewModel.checkAlreadyLoggedIn();
 

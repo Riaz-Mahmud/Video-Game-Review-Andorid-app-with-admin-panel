@@ -36,6 +36,33 @@ public class GameDetailsContact {
     @SerializedName("reviews")
     private List<GameReviews> gameReviewsList;
 
+    public void setId(String id) {
+        Id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public void setBanner(String banner) {
+        this.banner = banner;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public void setRating_count(String rating_count) {
+        this.rating_count = rating_count;
+    }
+
+    public void setIs_mine_review(boolean is_mine_review) {
+        this.is_mine_review = is_mine_review;
+    }
 
     public String getId() {
         return Id;

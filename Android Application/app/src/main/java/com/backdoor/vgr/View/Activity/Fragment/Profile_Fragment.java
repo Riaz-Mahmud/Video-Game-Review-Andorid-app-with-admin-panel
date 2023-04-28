@@ -33,15 +33,10 @@ import retrofit2.Response;
  */
 public class Profile_Fragment extends Fragment {
 
-    private FragmentProfileBinding binding;
-    private View v;
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //View v = inflater.inflate(R.layout.fragment_profile, container, false);
-
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false);
-        v = binding.getRoot();
+        com.backdoor.vgr.databinding.FragmentProfileBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false);
+        View v = binding.getRoot();
         ProfilePageViewModel viewModel = ViewModelProviders.of(Profile_Fragment.this).get(ProfilePageViewModel.class);
         viewModel.setActivity(getActivity());
         viewModel.setView(v);

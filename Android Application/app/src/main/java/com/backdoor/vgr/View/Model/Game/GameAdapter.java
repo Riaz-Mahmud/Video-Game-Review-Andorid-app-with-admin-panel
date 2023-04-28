@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.backdoor.vgr.R;
-import com.backdoor.vgr.View.Activity.GameDetailsActivity;
+import com.backdoor.vgr.View.Activity.Game.GameDetailsActivity;
 import com.backdoor.vgr.View.Activity.MainActivity;
 import com.backdoor.vgr.network.ApiClient;
 import com.squareup.picasso.Picasso;
@@ -47,7 +47,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.MyViewHolder> 
         holder.gameName.setText(contact.get(position).getName());
         holder.desc.setText(contact.get(position).getDesc());
         holder.rating.setRating(contact.get(position).getRating());
-        holder.ratingCount.setText(String.valueOf(contact.get(position).getRating()) + "(" + contact.get(position).getRating_count() + ")");
+        holder.ratingCount.setText(contact.get(position).getRating() + "(" + contact.get(position).getRating_count() + ")");
 
         if (contact.get(position).getBanner() != null) {
             if (!contact.get(position).getBanner().equals("")) {

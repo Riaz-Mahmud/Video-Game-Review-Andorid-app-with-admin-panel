@@ -1,4 +1,4 @@
-package com.backdoor.vgr.View.Activity;
+package com.backdoor.vgr.View.Activity.Game;
 
 import static com.backdoor.vgr.View.Activity.MainActivity.perfConfig;
 
@@ -31,6 +31,8 @@ import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.backdoor.vgr.R;
+import com.backdoor.vgr.View.Activity.ImageFullViewActivity;
+import com.backdoor.vgr.View.Activity.MainActivity;
 import com.backdoor.vgr.View.Model.Game.GameReviews;
 import com.backdoor.vgr.View.Model.Game.ReviewAdapter;
 import com.backdoor.vgr.databinding.ActivityGameDetailsBinding;
@@ -79,7 +81,7 @@ public class GameDetailsActivity extends AppCompatActivity {
             listChange();
 
         } else {
-            perfConfig.displayToast("Something going wrong! \nPlease try again!");
+            perfConfig.displayToast("Something going wrong!! \nPlease try again!");
         }
 
     }
@@ -154,7 +156,7 @@ public class GameDetailsActivity extends AppCompatActivity {
         showMoreTextBtn();
         refresh();
 
-        binding.backBtnGameDetails.setOnClickListener(v -> GameDetailsActivity.super.onBackPressed());
+        binding.backBtnGameDetails.setOnClickListener(v -> super.onBackPressed());
 
         binding.writeReviewBtn.setOnClickListener(view -> {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
