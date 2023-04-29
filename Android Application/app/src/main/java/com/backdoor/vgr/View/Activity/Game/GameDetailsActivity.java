@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.text.LineBreaker;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,6 +44,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class GameDetailsActivity extends AppCompatActivity {
@@ -91,7 +95,7 @@ public class GameDetailsActivity extends AppCompatActivity {
         viewModel.getSingleGameContact().observe(this, singleGameContact -> {
             this.gameReviewsList = singleGameContact.getGameDetailsContact().getGameReviewsList();
 
-            if (singleGameContact.isSuccess() && this.gameReviewsList.size() > 0) {
+            if (singleGameContact.isSuccess() && this.gameReviewsList != null && this.gameReviewsList.size() > 0) {
                 binding.reviewsRecyclerView.setVisibility(View.VISIBLE);
                 binding.noReviewFound.setVisibility(View.GONE);
             } else {
@@ -111,7 +115,12 @@ public class GameDetailsActivity extends AppCompatActivity {
 
                 binding.gameImageGameDetails.setOnClickListener(view -> {
                     Intent intent = new Intent(GameDetailsActivity.this, ImageFullViewActivity.class);
-                    intent.putExtra(MainActivity.IMAGE_LINK, value);
+                    if (viewModel.checkConnection()) {
+                        intent.putExtra(MainActivity.IMAGE_LINK, value);
+                    } else {
+                        // Pass the file path through the intent
+                        intent.putExtra(MainActivity.IMAGE_PATH, getFilePath());
+                    }
                     startActivity(intent);
                 });
 
@@ -142,6 +151,29 @@ public class GameDetailsActivity extends AppCompatActivity {
                 viewModel.getSingleGameDetails(gameId);
             }
         });
+    }
+
+    private String getFilePath() {
+        // Get the drawable from the ImageView
+        Drawable drawable = binding.gameImageGameDetails.getDrawable();
+
+        // Convert the drawable to a Bitmap
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+
+        // Save the bitmap to a file
+        File file = new File(getCacheDir(), "image.png");
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 80, fos);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Pass the file path through the intent
+        return file.getAbsolutePath();
     }
 
     public void init() {
@@ -305,7 +337,7 @@ public class GameDetailsActivity extends AppCompatActivity {
     }
 
     private void submitReview(float rating, String message, BottomSheetDialog bottomSheetDialog) {
-        if (lat.isEmpty() && lon.isEmpty()) {
+        if (lat != null && lon != null && lat.isEmpty() && lon.isEmpty()) {
             perfConfig.displayToast("Location not working!");
             return;
         }

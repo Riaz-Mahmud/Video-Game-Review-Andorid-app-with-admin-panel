@@ -103,4 +103,8 @@ public class GameDetailsContact {
     public List<GameReviews> getGameReviewsList() {
         return gameReviewsList;
     }
+
+    public void setGameReviewsList(List<GameReviews> gameReviewsList) {
+        this.gameReviewsList = gameReviewsList;
+    }
 }

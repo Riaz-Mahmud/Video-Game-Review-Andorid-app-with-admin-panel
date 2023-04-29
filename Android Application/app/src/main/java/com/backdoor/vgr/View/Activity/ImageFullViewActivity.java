@@ -4,6 +4,7 @@ import static com.backdoor.vgr.View.Activity.MainActivity.perfConfig;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -49,10 +50,23 @@ public class ImageFullViewActivity extends AppCompatActivity {
                 perfConfig.displayToast("Something going wrong!");
                 super.onBackPressed();
             }
+        } else if (getIntent().hasExtra(MainActivity.IMAGE_PATH)) {
+            String imagePath = getIntent().getStringExtra(MainActivity.IMAGE_PATH);
+            setImagePath(imagePath);
         } else {
             perfConfig.displayToast("Something going wrong!");
             super.onBackPressed();
         }
+    }
+
+    private void setImagePath(String imagePath) {
+        // Load the image from the file
+        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+
+        // Set the image to an ImageView
+        fullViewImage.setImageBitmap(bitmap);
+
+        updateBGColorPalette();
     }
 
     private void setImage(String imageLink) {

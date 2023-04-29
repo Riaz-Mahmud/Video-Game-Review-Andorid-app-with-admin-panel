@@ -2,36 +2,42 @@ package com.backdoor.vgr.Model.RoomDB
 
 import android.content.Context
 import android.util.Log
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.backdoor.vgr.Model.RoomDB.Game.GameDao
+import com.backdoor.vgr.Model.RoomDB.Game.GameDataEntity
+import com.backdoor.vgr.Model.RoomDB.Review.ReviewDao
+import com.backdoor.vgr.Model.RoomDB.Review.ReviewDataEntity
 
 
 @Database(
-    version = 5,
-    entities = [GameDataEntity::class],
+    version = 10,
+    entities = [GameDataEntity::class, ReviewDataEntity::class],
     exportSchema = true,
 )
 
-abstract class GamesDatabase : RoomDatabase() {
+abstract class ReviewQuestDatabase : RoomDatabase() {
 
-    abstract fun getDao(): GameDao
+    abstract fun getGameDao(): GameDao
+    abstract fun getReviewDao(): ReviewDao
 
     companion object {
         @Volatile
-        private var INSTANCE: GamesDatabase? = null
+        private var INSTANCE: ReviewQuestDatabase? = null
 
         private const val DB_NAME = "reviewQuest.db"
-        private const val DB_FILENAME = "AppDB.db" //<<<<< ADDED for getting header
         const val TAG = "DBINFO" //<<<< ADDED for logging
-        const val DBVERSION = 1 //<<<<<ADDED for logging
 
-        fun getDatabase(context: Context): GamesDatabase {
+        fun getDatabase(context: Context): ReviewQuestDatabase {
             if (INSTANCE == null) {
                 synchronized(this) {
-                    INSTANCE = Room.databaseBuilder(context.applicationContext, GamesDatabase::class.java, DB_NAME)
+                    INSTANCE = Room.databaseBuilder(
+                        context.applicationContext,
+                        ReviewQuestDatabase::class.java,
+                        DB_NAME
+                    )
                         .fallbackToDestructiveMigration()
                         .build()
                 }

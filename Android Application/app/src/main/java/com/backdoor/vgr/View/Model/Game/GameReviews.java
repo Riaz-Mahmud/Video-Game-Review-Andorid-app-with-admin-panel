@@ -67,4 +67,32 @@ public class GameReviews {
     public UserContact getUserContact() {
         return userContact;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public void setIs_mine(boolean is_mine) {
+        this.is_mine = is_mine;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setUserContact(UserContact userContact) {
+        this.userContact = userContact;
+    }
 }

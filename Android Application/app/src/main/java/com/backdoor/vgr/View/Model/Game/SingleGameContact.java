@@ -24,4 +24,16 @@ public class SingleGameContact {
     public GameDetailsContact getGameDetailsContact() {
         return gameDetailsContact;
     }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public void setGameDetailsContact(GameDetailsContact gameDetailsContact) {
+        this.gameDetailsContact = gameDetailsContact;
+    }
 }

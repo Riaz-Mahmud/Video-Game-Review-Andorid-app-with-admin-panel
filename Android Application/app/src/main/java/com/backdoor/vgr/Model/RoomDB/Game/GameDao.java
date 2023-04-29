@@ -1,4 +1,4 @@
-package com.backdoor.vgr.Model.RoomDB;
+package com.backdoor.vgr.Model.RoomDB.Game;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -28,5 +28,8 @@ public interface GameDao {
 
     @Query("SELECT COUNT(*) FROM games")
     int getGameCount() throws Exception;
+
+    @Query("UPDATE games SET is_mine_review = :isMineReview WHERE uid = :id")
+    void updateGameIsMineReview(int id, int isMineReview) throws Exception;
 
 }

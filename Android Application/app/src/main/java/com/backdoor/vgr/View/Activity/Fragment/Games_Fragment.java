@@ -1,7 +1,6 @@
 package com.backdoor.vgr.View.Activity.Fragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,15 +8,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.backdoor.vgr.Model.RoomDB.GameDao;
-import com.backdoor.vgr.Model.RoomDB.GameDataEntity;
 import com.backdoor.vgr.R;
-import com.backdoor.vgr.View.Activity.IntroActivity;
 import com.backdoor.vgr.View.Model.Game.GameAdapter;
 import com.backdoor.vgr.View.Model.Game.GameDetailsContact;
 import com.backdoor.vgr.databinding.FragmentGamesBinding;

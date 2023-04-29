@@ -1,4 +1,4 @@
-package com.backdoor.vgr.Model.RoomDB
+package com.backdoor.vgr.Model.RoomDB.Game
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -13,7 +13,7 @@ data class GameDataEntity(
     @ColumnInfo(name = "desc") val desc: String?,
     @ColumnInfo(name = "rating") val rating: String?,
     @ColumnInfo(name = "ratingCount") val ratingCount: String?,
-    @ColumnInfo(name = "is_mine_review") val isMineReview: Boolean?,
+    @ColumnInfo(name = "is_mine_review") val isMineReview: Int,
     @ColumnInfo(name = "image") val image: String?,
 
     )

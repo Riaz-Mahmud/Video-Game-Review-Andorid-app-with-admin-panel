@@ -41,9 +41,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
 
+        String firstName = contact.get(position).getUserContact().getFirst_name();
+        String lastName = contact.get(position).getUserContact().getLast_name() != null ? contact.get(position).getUserContact().getLast_name() : "";
 
-        String name = contact.get(position).getUserContact().getFirst_name() + " " +
-                contact.get(position).getUserContact().getLast_name();
+        String name = firstName + " " + lastName;
 
         if (contact.get(position).is_mine()) {
             name = name + " (You)";

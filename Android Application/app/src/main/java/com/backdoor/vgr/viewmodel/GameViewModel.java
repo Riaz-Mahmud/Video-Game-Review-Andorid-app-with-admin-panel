@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
@@ -16,12 +17,16 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.backdoor.vgr.Model.Repository.DataRepository;
-import com.backdoor.vgr.Model.RoomDB.GameDao;
-import com.backdoor.vgr.Model.RoomDB.GameDataEntity;
+import com.backdoor.vgr.Model.RoomDB.Game.GameDao;
+import com.backdoor.vgr.Model.RoomDB.Game.GameDataEntity;
+import com.backdoor.vgr.Model.RoomDB.Review.ReviewDao;
+import com.backdoor.vgr.Model.RoomDB.Review.ReviewDataEntity;
 import com.backdoor.vgr.View.Activity.IntroActivity;
 import com.backdoor.vgr.View.Model.Default_Contact;
 import com.backdoor.vgr.View.Model.Game.GameDetailsContact;
+import com.backdoor.vgr.View.Model.Game.GameReviews;
 import com.backdoor.vgr.View.Model.Game.SingleGameContact;
+import com.backdoor.vgr.View.Model.User.UserContact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +37,7 @@ public class GameViewModel extends ViewModel {
     Activity activity;
     DataRepository dataRepository;
     View view;
+    ReviewDao reviewDao;
 
 
     MutableLiveData<String> errorMessage = new MutableLiveData<>();
@@ -83,7 +89,7 @@ public class GameViewModel extends ViewModel {
             dataRepository.getGamesList();
         } else {
             // Fetch data from the local RoomDB
-            GameDao gameDao = IntroActivity.gamesDatabase.getDao();
+            GameDao gameDao = IntroActivity.database.getGameDao();
             LiveData<List<GameDataEntity>> gameData = gameDao.getAllGame();
             gameData.observe((LifecycleOwner) activity, (Observer<List<GameDataEntity>>) gameDataEntities -> {
                 List<GameDetailsContact> gameDetailsContacts = new ArrayList<>();
@@ -94,7 +100,6 @@ public class GameViewModel extends ViewModel {
                     gameDetailsContact.setDesc(gameDataEntity.getDesc());
                     gameDetailsContact.setRating(Float.parseFloat(Objects.requireNonNull(gameDataEntity.getRating())));
                     gameDetailsContact.setRating_count(gameDataEntity.getRatingCount());
-                    gameDetailsContact.setIs_mine_review(Boolean.TRUE.equals(gameDataEntity.isMineReview()));
                     gameDetailsContact.setBanner(gameDataEntity.getImage());
                     gameDetailsContacts.add(gameDetailsContact);
                 }
@@ -106,6 +111,7 @@ public class GameViewModel extends ViewModel {
 
     public void getSingleGameDetails(String gameId) {
         if (checkConnection()) {
+            Log.d("checkConnection", "if");
 
             dataRepository = DataRepository.getInstance(activity.getApplicationContext());
             dataRepository = new DataRepository((DataRepository.GetSingleGameDetailsTask) body -> {
@@ -124,21 +130,55 @@ public class GameViewModel extends ViewModel {
             }, activity.getApplicationContext());
             dataRepository.getSingleGameDetails(gameId);
         } else {
-            GameDao gameDao = IntroActivity.gamesDatabase.getDao();
+            Log.d("checkConnection", "else");
+            GameDao gameDao = IntroActivity.database.getGameDao();
+            reviewDao = IntroActivity.database.getReviewDao();
             try {
                 LiveData<GameDataEntity> gameData = gameDao.getGameById(Integer.parseInt(gameId));
+                GameDetailsContact gameDetailsContact = new GameDetailsContact();
+
                 gameData.observe((LifecycleOwner) activity, gameDataEntity -> {
-                    GameDetailsContact gameDetailsContact = new GameDetailsContact();
                     gameDetailsContact.setId(gameDataEntity.getUid());
                     gameDetailsContact.setName(gameDataEntity.getTitle());
                     gameDetailsContact.setDesc(gameDataEntity.getDesc());
                     gameDetailsContact.setRating(Float.parseFloat(Objects.requireNonNull(gameDataEntity.getRating())));
                     gameDetailsContact.setRating_count(gameDataEntity.getRatingCount());
-                    gameDetailsContact.setIs_mine_review(Boolean.TRUE.equals(gameDataEntity.isMineReview()));
+                    gameDetailsContact.setIs_mine_review(gameDataEntity.isMineReview() == 1);
                     gameDetailsContact.setBanner(gameDataEntity.getImage());
 
                     setSingleGameDetails(gameDetailsContact);
+                    SingleGameContact singleGame = new SingleGameContact();
+                    singleGame.setGameDetailsContact(gameDetailsContact);
+                    singleGame.setSuccess(true);
+                    singleGame.setError(null);
+
+                    singleGameContact.postValue(singleGame);
                 });
+
+                LiveData<List<ReviewDataEntity>> reviewData = reviewDao.getReviewByGameId(Integer.parseInt(gameId));
+                reviewData.observe((LifecycleOwner) activity, (Observer<List<ReviewDataEntity>>) reviewDataEntities -> {
+                    List<GameReviews> gameReviewsArrayList = new ArrayList<>();
+                    for (ReviewDataEntity reviewDataEntity : reviewDataEntities) {
+                        GameReviews gameReviews = new GameReviews();
+                        gameReviews.setId(reviewDataEntity.getUid());
+                        gameReviews.setGameId(String.valueOf(reviewDataEntity.getGameId()));
+                        gameReviews.setComment(reviewDataEntity.getComment());
+                        gameReviews.setIs_mine(reviewDataEntity.isMine() == 1);
+                        gameReviews.setRating(Float.parseFloat(Objects.requireNonNull(reviewDataEntity.getRating())));
+                        gameReviews.setStatus(reviewDataEntity.getStatus());
+
+                        UserContact userContact = new UserContact();
+                        userContact.setFirst_name(reviewDataEntity.getTitle());
+
+                        gameReviews.setUserContact(userContact);
+                        gameReviewsArrayList.add(gameReviews);
+
+                        Log.d("viewRoomDBReviewCat", "Loop value here: " + reviewDataEntity.getUid());
+                    }
+                    gameDetailsContact.setGameReviewsList(gameReviewsArrayList);
+                });
+
+
             } catch (Exception e) {
                 perfConfig.displayToast("Something went wrong!");
                 activity.onBackPressed();
@@ -206,7 +246,6 @@ public class GameViewModel extends ViewModel {
         } else {
             setIsMineReview(true);
         }
-
 
         buttonPress.setValue(1);
     }
@@ -280,6 +319,10 @@ public class GameViewModel extends ViewModel {
             singleGameContact = new MutableLiveData<>();
         }
         return singleGameContact;
+    }
+
+    public void setSingleGameContact(SingleGameContact singleGameContact) {
+        this.singleGameContact.setValue(singleGameContact);
     }
 
     public MutableLiveData<Default_Contact> getDeleteSingleReviewContact() {

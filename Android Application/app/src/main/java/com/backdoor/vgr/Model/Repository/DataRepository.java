@@ -5,12 +5,15 @@ import static com.backdoor.vgr.View.Activity.IntroActivity.perfConfig;
 import android.content.Context;
 import android.util.Log;
 
-import com.backdoor.vgr.Model.RoomDB.GameDao;
-import com.backdoor.vgr.Model.RoomDB.GameDataEntity;
+import com.backdoor.vgr.Model.RoomDB.Game.GameDao;
+import com.backdoor.vgr.Model.RoomDB.Game.GameDataEntity;
+import com.backdoor.vgr.Model.RoomDB.Review.ReviewDao;
+import com.backdoor.vgr.Model.RoomDB.Review.ReviewDataEntity;
 import com.backdoor.vgr.View.Activity.IntroActivity;
 import com.backdoor.vgr.View.Model.Default_Contact;
 import com.backdoor.vgr.View.Model.Game.GameContact;
 import com.backdoor.vgr.View.Model.Game.GameDetailsContact;
+import com.backdoor.vgr.View.Model.Game.GameReviews;
 import com.backdoor.vgr.View.Model.Game.SingleGameContact;
 import com.backdoor.vgr.View.Model.LoginSignup.LoginContact;
 import com.backdoor.vgr.View.Model.LoginSignup.SignupContact;
@@ -28,6 +31,8 @@ public class DataRepository {
 
     public static DataRepository dataRepository;
     private final ApiInterface apiInterface;
+    private static GameDao gameDao;
+    private static ReviewDao reviewDao;
 
     public GetLoginTask getLoginTask;
     public GetSignupTask getSignupTask;
@@ -166,7 +171,7 @@ public class DataRepository {
 
     private void saveRoomDB(List<GameDetailsContact> launches) {
 
-        GameDao gameDao = IntroActivity.gamesDatabase.getDao();
+        gameDao = IntroActivity.database.getGameDao();
 
         new Thread(() -> {
             try {
@@ -203,9 +208,13 @@ public class DataRepository {
                                 item.getDesc(),
                                 String.valueOf(item.getRating()),
                                 item.getRating_count(),
-                                item.is_mine_review(),
+                                item.is_mine_review() ? 1 : 0,
                                 item.getBanner()
                         ));
+
+                        Log.d("isMineReview", "DataRepo itemIsMine: " + item.is_mine_review());
+                        int test = item.is_mine_review() ? 1 : 0;
+                        Log.d("isMineReview", "DataRepo itemIsMine to int: " + test);
 
                         if (dataInsert > 0) {
                             Log.d("RoomDBCat", "Saved: " + item.getName());
@@ -229,6 +238,7 @@ public class DataRepository {
             public void onResponse(Call<SingleGameContact> call, Response<SingleGameContact> response) {
                 if (response.isSuccessful()) {
                     getSingleGameDetailsTask.getSingleGameListTask(response.body());
+                    saveReviewRoomDB(response.body().getGameDetailsContact());
                 } else {
                     getSingleGameDetailsTask.getSingleGameListTask(null);
                 }
@@ -240,6 +250,70 @@ public class DataRepository {
                 getSingleGameDetailsTask.getSingleGameListTask(null);
             }
         });
+    }
+
+    private void saveReviewRoomDB(GameDetailsContact gameDetailsContact) {
+        reviewDao = IntroActivity.database.getReviewDao();
+
+        new Thread(() -> {
+            try {
+                int count = reviewDao.getReviewCountByGameId(Integer.parseInt(gameDetailsContact.getId()));
+                Log.d("RoomDBReviewCat", "getReviewCountByGameId value: " + count);
+                if (count > 0) {
+                    int save = reviewDao.deleteAllReviewsByGameId(Integer.parseInt(gameDetailsContact.getId()));
+                    Log.d("RoomDBReviewCat", "deleteAllReviewsByGameId value: " + save);
+                    if (save > 0) {
+                        insertReviewsIntoDB(gameDetailsContact);
+                    } else {
+                        Log.d("RoomDBReviewCat", "deleteAllReviewsByGameId else");
+                    }
+                } else {
+                    Log.d("RoomDBReviewCat", "else");
+                    insertReviewsIntoDB(gameDetailsContact);
+                }
+            } catch (Exception e) {
+                Log.d("RoomDBReviewCat", "Catch Error: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    private void insertReviewsIntoDB(GameDetailsContact gameDetailsContact) {
+        reviewDao = IntroActivity.database.getReviewDao();
+        gameDao = IntroActivity.database.getGameDao();
+        new Thread(() -> {
+            if (gameDetailsContact != null) {
+
+                try {
+                    gameDao.updateGameIsMineReview(Integer.parseInt(gameDetailsContact.getId()), gameDetailsContact.is_mine_review() ? 1 : 0);
+                } catch (Exception e) {
+                    Log.d("RoomDBReviewCat", "update game isMineReview error: " + e.getMessage());
+                }
+
+                for (GameReviews item : gameDetailsContact.getGameReviewsList()) {
+                    try {
+                        long dataInsert = reviewDao.insertReview(new ReviewDataEntity(
+                                null
+                                , item.getId(),
+                                item.getUserContact().getFirst_name() + " " + item.getUserContact().getLast_name(),
+                                item.getComment(),
+                                String.valueOf(item.getRating()),
+                                item.is_mine() ? 1 : 0,
+                                Integer.parseInt(item.getGameId()),
+                                item.getStatus()
+                        ));
+
+                        if (dataInsert > 0) {
+                            Log.d("RoomDBReviewCat", "Saved: " + item.getId());
+                        } else {
+                            Log.d("RoomDBReviewCat", "Not Saved: " + item.getId());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.d("RoomDBReviewCat", "Data Store: " + item.getId() + " Error: " + e.getMessage());
+                    }
+                }
+            }
+        }).start();
     }
 
     public void deleteSingleReview(String gameId, String reviewId) {

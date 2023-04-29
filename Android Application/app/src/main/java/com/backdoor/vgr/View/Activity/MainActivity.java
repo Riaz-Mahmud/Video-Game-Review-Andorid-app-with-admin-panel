@@ -1,10 +1,10 @@
 package com.backdoor.vgr.View.Activity;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
-import android.os.Bundle;
 
 import com.backdoor.vgr.R;
 import com.backdoor.vgr.View.Activity.Fragment.Games_Fragment;
@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private Games_Fragment dashBoardFragment;
 
     public static String IMAGE_LINK = "imageLnk";
+    public static String IMAGE_PATH = "image_path";
     public static String GAME_ID = "gameId";
 
     @Override
