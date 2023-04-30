@@ -5,6 +5,8 @@ import static maes.tech.intentanim.CustomIntent.customType;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +47,8 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.MyViewHolder> 
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
         holder.gameName.setText(contact.get(position).getName());
-        holder.desc.setText(contact.get(position).getDesc());
+
+        holder.desc.setText(Html.fromHtml(contact.get(position).getDesc(), Html.FROM_HTML_MODE_COMPACT));
         holder.rating.setRating(contact.get(position).getRating());
         holder.ratingCount.setText(contact.get(position).getRating() + "(" + contact.get(position).getRating_count() + ")");
 

@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 
@@ -49,7 +51,7 @@ public class GameViewModel extends ViewModel {
     MutableLiveData<String> gameName = new MutableLiveData<>();
     MutableLiveData<Float> rating = new MutableLiveData<>();
     MutableLiveData<String> ratingCount = new MutableLiveData<>();
-    MutableLiveData<String> gameDesc = new MutableLiveData<>();
+    MutableLiveData<Spanned> gameDesc = new MutableLiveData<>();
     MutableLiveData<String> gameImage = new MutableLiveData<>();
     MutableLiveData<Integer> detailsVisibility = new MutableLiveData<>();
     MutableLiveData<Integer> buttonPress = new MutableLiveData<>();
@@ -234,7 +236,7 @@ public class GameViewModel extends ViewModel {
         setRating(data.getRating());
         setRatingCount(data.getRating() + "(" + data.getRating_count() + ")");
         setGameName(data.getName());
-        setGameDesc(data.getDesc());
+        setGameDesc(Html.fromHtml(data.getDesc(),Html.FROM_HTML_MODE_COMPACT));
         if (data.getBanner() != null) {
             if (!data.getBanner().equals("")) {
                 setGameImage(data.getBanner());
@@ -267,11 +269,11 @@ public class GameViewModel extends ViewModel {
         this.rating.setValue(rating);
     }
 
-    public MutableLiveData<String> getGameDesc() {
+    public MutableLiveData<Spanned> getGameDesc() {
         return gameDesc;
     }
 
-    public void setGameDesc(String gameDesc) {
+    public void setGameDesc(Spanned gameDesc) {
         this.gameDesc.setValue(gameDesc);
     }
 

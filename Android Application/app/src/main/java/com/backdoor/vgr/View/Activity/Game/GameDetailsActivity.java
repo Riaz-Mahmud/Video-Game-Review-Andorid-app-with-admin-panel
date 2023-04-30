@@ -12,6 +12,7 @@ import android.graphics.text.LineBreaker;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.Html;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -94,6 +95,8 @@ public class GameDetailsActivity extends AppCompatActivity {
     private void listChange() {
         viewModel.getSingleGameContact().observe(this, singleGameContact -> {
             this.gameReviewsList = singleGameContact.getGameDetailsContact().getGameReviewsList();
+
+//            binding.gameDescTxt.setText(Html.fromHtml(singleGameContact.getGameDetailsContact().getDesc(), Html.FROM_HTML_MODE_COMPACT));
 
             if (singleGameContact.isSuccess() && this.gameReviewsList != null && this.gameReviewsList.size() > 0) {
                 binding.reviewsRecyclerView.setVisibility(View.VISIBLE);

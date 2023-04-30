@@ -174,7 +174,7 @@ public class AuthViewModel extends ViewModel {
         if (checkConnection()) {
             dataRepository = DataRepository.getInstance(activity.getApplicationContext());
             dataRepository = new DataRepository((DataRepository.IsCheckUserStatusTask) response -> {
-                if (response.body() != null) {
+                if (response.isSuccessful()) {
                     checkStatusContact = (CheckStatusContact) response.body();
                     if (checkStatusContact.isSuccess()) {
                         tryToConnectCount = 5;

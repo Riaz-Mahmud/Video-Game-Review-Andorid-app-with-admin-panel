@@ -25,7 +25,7 @@ class GameController extends APIController
         }
 
         foreach($games as $game){
-            $game->banner = ImageHelper::generateImage($game->banner, 'medium');
+            $game->banner = ImageHelper::generateImage($game->banner);
         }
 
         parent::log($request , 'View Game List');
@@ -40,7 +40,7 @@ class GameController extends APIController
         $game = Game::where('id', $id)->where('status', 'Active')->where('is_deleted', 0)->first();
 
         if($game){
-            $game->banner = ImageHelper::generateImage($game->banner, 'medium');
+            $game->banner = ImageHelper::generateImage($game->banner);
 
             // get all review of if the status is active and is_deleted is 0 but if review is from the current user then get all review
             $allReviews = $game->reviews()

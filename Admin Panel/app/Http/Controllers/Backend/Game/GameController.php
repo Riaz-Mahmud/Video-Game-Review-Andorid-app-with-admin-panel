@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Game;
 
+use App\Helpers\StringHelper;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -32,6 +33,7 @@ class GameController extends BackendController
         foreach($data['rows'] as $row){
             $row->hashId = Crypt::encrypt($row->id);
             $row->sale_expiry_date = $row->sale_expiry_date ? date('d-m-Y', strtotime($row->sale_expiry_date)) : 'N/A' ;
+            $row->description = StringHelper::desc(strip_tags($row->description), 300);
         }
 
         parent::log($request , 'View Game List');
@@ -100,6 +102,11 @@ class GameController extends BackendController
     }
 
     protected function uploadImage($file, $game){
+
+        if(!is_dir(storage_path("app/public/assets/games/".$game->id))){
+            mkdir(storage_path("app/public/assets/games/".$game->id) , 0777, true);
+        }
+
         $file = $file;
         $file_ext = $file->getClientOriginalExtension();
         $file_name = date('YmdHis').rand(1000, 9999);
@@ -111,15 +118,18 @@ class GameController extends BackendController
         $game->save();
 
         foreach(config('backend.games.image_sizes') as $key => $size){
-            $thumbnailUploadPath = 'assets/games/' . $game->id . '/' .$file_name . $key . '.' .$file_ext;
+            try{
+                $fileName = $file_name.'_'.$key. '.' .$file_ext;
 
-            $photo = Image::make($file)
-                    ->resize($size['width'], $size['height'], function ($constraint) {
-                        $constraint->aspectRatio();
-                    })
-                    ->encode($file_ext, 90);
+                $thumbnail = Image::make($file);
+                $thumbnail->resize($size['width'], $size['height'],function ($constraint) {
+                    $constraint->aspectRatio();
+                })->save(storage_path('app/public/assets/games/'.$game->id.'/'.$fileName));
 
-            Storage::disk('public')->put( $thumbnailUploadPath, $photo );
+            }catch(\Exception $e){
+                dd($e->getMessage(), $e->getLine());
+                continue;
+            }
         }
     }
 

@@ -130,15 +130,7 @@ public class DataRepository {
         apiInterface.checkUserStatus(perfConfig.readUserId()).enqueue(new Callback<CheckStatusContact>() {
             @Override
             public void onResponse(Call<CheckStatusContact> call, Response<CheckStatusContact> response) {
-                if (response.code() == 401) {
-                    isCheckUserStatusTask.checkUserStatusServerResponse(response);
-                    return;
-                }
-                if (response.isSuccessful()) {
-                    isCheckUserStatusTask.checkUserStatusServerResponse(response);
-                } else {
-                    isCheckUserStatusTask.checkUserStatusServerResponse(null);
-                }
+                isCheckUserStatusTask.checkUserStatusServerResponse(response);
             }
 
             @Override
