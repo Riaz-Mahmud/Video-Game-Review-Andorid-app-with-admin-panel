@@ -20,9 +20,15 @@ class GameController extends APIController
 
         $games = Game::where('status', 'Active')->where('is_deleted', 0)->latest('id')->get();
 
+        if($games->isEmpty()){
+            return parent::apiResponse(false, 'No games found', null);
+        }
+
         foreach($games as $game){
             $game->banner = ImageHelper::generateImage($game->banner, 'medium');
         }
+
+        parent::log($request , 'View Game List');
 
         return parent::apiResponse(true, null, $games);
     }
@@ -66,6 +72,8 @@ class GameController extends APIController
 
 
             $game->reviews = $reviews;
+
+            parent::log($request , 'View Game Details' . ' - ' . $game->slug);
 
             return parent::apiResponse(true, null, $game);
         }else{

@@ -134,11 +134,11 @@
                                                     @endif
                                                 </td>
                                                 <td class="text-center" width="20%">
-                                                    <a href="{{ route('admin.games.edit', $item['hashId']) }}" class="btn btn-sm btn-primary mb-1 mt-1" title="Edit">
+                                                    <a href="{{ route('admin.review.update.status', $item['hashId']) }}" class="btn btn-sm btn-primary mb-1 mt-1" title="Edit">
                                                         <i class="fa fa-edit text-white"></i>
                                                         Edit
                                                     </a>
-                                                    <form action="{{ route('admin.games.delete', $item['hashId']) }}" method="POST" class="d-inline-block">
+                                                    <form action="{{ route('admin.review.delete', $item['hashId']) }}" method="POST" class="d-inline-block">
                                                         @csrf
                                                         <button type="submit" class="btn btn-sm btn-danger mb-1 mt-1" onclick="return confirm('Are you sure you want to delete this item?');" title="Delete">
                                                             <i class="fa fa-trash text-white"></i>

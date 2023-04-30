@@ -23,7 +23,7 @@ class GameController extends BackendController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(){
+    public function index(Request $request){
 
         $data=[];
 
@@ -33,6 +33,8 @@ class GameController extends BackendController
             $row->hashId = Crypt::encrypt($row->id);
             $row->sale_expiry_date = $row->sale_expiry_date ? date('d-m-Y', strtotime($row->sale_expiry_date)) : 'N/A' ;
         }
+
+        parent::log($request , 'View Game List');
 
         return view('backend.pages.game.index')->with('data', $data);
 
@@ -45,6 +47,8 @@ class GameController extends BackendController
      */
     public function create(Request $request){
         $data = [];
+
+        parent::log($request , 'View Game Create');
 
         return view('backend.pages.game.create')->with('data', $data);
 
@@ -81,6 +85,8 @@ class GameController extends BackendController
             if($request->hasFile('image')){
                 $this->uploadImage($request->file('image'), $game);
             }
+
+            parent::log($request , 'Create Game');
 
             DB::commit();
             Session::flash('success', 'Game created successfully');
@@ -123,7 +129,7 @@ class GameController extends BackendController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($slug){
+    public function show(Request $request, $slug){
         $slug = 'game/'.$slug;
 
         $data = array();
@@ -144,7 +150,9 @@ class GameController extends BackendController
             $review->user = Profile::find($review->user_id);
             $review->game = Game::find($review->game_id);
         }
-        
+
+        parent::log($request , 'View Game Details' . ' - ' . $slug);
+
         return view('backend.pages.game.show')->with('data', $data);
     }
 
@@ -154,7 +162,7 @@ class GameController extends BackendController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id){
+    public function edit(Request $request ,$id){
 
         try{
             $data =[];
@@ -167,6 +175,8 @@ class GameController extends BackendController
             }
 
             $data['row']['hashId'] = $id;
+
+            parent::log($request , 'View Game Edit');
 
             return view('backend.pages.game.edit')->with('data', $data);
 
@@ -218,6 +228,8 @@ class GameController extends BackendController
                 $this->uploadImage($request->file('image'), $game);
             }
 
+            parent::log($request , 'Update Game' . ' - ' . $game->name . ' - ' . $game->id);
+
             DB::commit();
             Session::flash('success', 'Game updated successfully');
             return redirect()->route('admin.games.index');
@@ -236,7 +248,7 @@ class GameController extends BackendController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id){
+    public function destroy(Request $request ,$id){
 
         try{
 
@@ -254,6 +266,9 @@ class GameController extends BackendController
                 Session::flash('error', 'Game not deleted');
                 return redirect()->back();
             }
+
+            parent::log($request , 'Delete Game ' . ' - ' . $game->name . ' - ' . $game->id);
+
             Session::flash('success', 'Game deleted successfully');
             return redirect()->route('admin.games.index');
 

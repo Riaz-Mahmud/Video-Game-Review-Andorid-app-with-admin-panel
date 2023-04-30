@@ -2,16 +2,12 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Models\News;
+use App\Models\Game;
 
 use App\Models\User;
-use App\Models\Profile;
+use App\Models\Review;
 use App\Models\Session;
-use App\Helpers\Helpers;
-use Jenssegers\Agent\Agent;
-use App\Jobs\ActivityLogJob;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class HomeController extends BackendController
 {
@@ -21,6 +17,11 @@ class HomeController extends BackendController
         $data = [];
 
         parent::log($request , 'View Dashboard');
+
+        $data['total_users'] = User::count();
+        $data['total_reviews'] = Review::where('status', 'Active')->where('is_deleted', 0)->count();
+        $data['total_games'] = Game::where('status', 'Active')->where('is_deleted', 0)->count();
+        $data['total_live_users'] = Session::activity(10)->count();
 
         return view('backend.pages.home.index')->with('data', $data);
     }

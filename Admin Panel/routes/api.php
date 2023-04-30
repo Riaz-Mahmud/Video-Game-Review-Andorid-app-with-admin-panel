@@ -44,6 +44,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('list', [ReviewController::class, 'list'])->name('api.v1.games.reviews.list');
                 Route::get('list/{id}', [ReviewController::class, 'show'])->name('api.v1.games.reviews.show');
                 Route::post('add', [ReviewController::class, 'store'])->name('api.v1.games.reviews.store');
+                Route::delete('delete/{id}', [ReviewController::class, 'destroy'])->name('api.v1.games.reviews.destroy');
             });
             //////////////////// Reviews End ////////////////////
         });

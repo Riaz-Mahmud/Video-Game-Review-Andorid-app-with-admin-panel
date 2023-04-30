@@ -24,6 +24,14 @@
                 <div class="card-body">
                     <p class="login-box-msg">Sign in to start your session</p>
 
+                    @if ($errors->any() || session('error'))
+                        @include('backend._partials.errorMsg')
+                    @endif
+
+                    @if (session('success'))
+                        @include('backend._partials.successMsg')
+                    @endif
+
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
                         <div class="input-group mb-3">
@@ -61,12 +69,7 @@
                         </div>
                     </form>
 
-                    <p class="mb-1">
-                        <a href="{{ route('password.request') }}">I forgot my password</a>
-                    </p>
-                    <p class="mb-0">
-                        <a href="{{ route('register') }}" class="text-center">Register a new membership</a>
-                    </p>
+
                 </div>
                 <!-- /.card-body -->
             </div>

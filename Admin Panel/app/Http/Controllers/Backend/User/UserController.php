@@ -42,6 +42,8 @@ class UserController extends BackendController
             ];
         }
 
+        parent::log($request , 'View Users');
+
         return view('backend.pages.user.index')->with('data', $data);
     }
 
@@ -53,6 +55,8 @@ class UserController extends BackendController
             $profile = Profile::where('user_id', $id)->first();
             $profile->is_deleted = 1;
             $profile->save();
+
+            parent::log($request , 'Delete User'. ' - ' . $profile->id);
 
             Session()->flash('success', 'User deleted successfully');
             return redirect()->route('admin.user.index');

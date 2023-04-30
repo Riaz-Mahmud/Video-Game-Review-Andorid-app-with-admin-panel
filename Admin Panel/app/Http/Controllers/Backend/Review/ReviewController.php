@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Backend\BackendController;
+use App\Services\GameService;
 
 class ReviewController extends BackendController
 {
@@ -23,6 +24,8 @@ class ReviewController extends BackendController
             $row->user =  $row->user;
             $row->game =  $row->game;
         }
+
+        parent::log($request , 'View Review List');
 
         return view('backend.pages.review.index')->with('data', $data);
     }
@@ -46,14 +49,9 @@ class ReviewController extends BackendController
                 return redirect()->back();
             }
 
-            $game = Game::find($review->game_id);
+            \Facades\App\Services\GameService::updateGameReview($review->game_id);
 
-            if($game){
-                // update game table rating and rating count
-                $game->rating = $game->reviews()->where('status', 'Active')->where('is_deleted', 0)->avg('rating');
-                $game->rating_count = $game->reviews()->where('status', 'Active')->where('is_deleted', 0)->count();
-                $game->save();
-            }
+            parent::log($request , 'Update Review Status' . ' - ' . $review->id);
 
             Session::flash('success', 'Review status updated successfully');
             return redirect()->back();
@@ -65,28 +63,35 @@ class ReviewController extends BackendController
 
     }
 
-    public function destroy($id){
+    public function destroy(Request $request, $id){
 
         try{
 
-            $game = Review::find(Crypt::decrypt($id));
-            if(!$game){
+            $review = Review::find(Crypt::decrypt($id));
+            if(!$review){
                 Session::flash('error', 'Review not found');
                 return redirect()->back();
             }
 
-            $delete = Review::where('id', $game->id)->update([
+            $delete = Review::where('id', $review->id)->update([
                 'is_deleted' => 1,
             ]);
 
             if(!$delete){
+
                 Session::flash('error', 'Review not deleted');
                 return redirect()->back();
             }
+
+            \Facades\App\Services\GameService::updateGameReview($review->game_id);
+
+            parent::log($request , 'Delete Review' . ' - ' . $review->id);
+
             Session::flash('success', 'Review deleted successfully');
             return redirect()->back();
 
         }catch(\Exception $e){
+            dd($e->getMessage() , $e->getLine());
             Session::flash('error', $e->getMessage());
             return redirect()->back();
         }

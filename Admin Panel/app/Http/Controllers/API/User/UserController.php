@@ -57,6 +57,8 @@ class UserController extends APIController
 
             DB::commit();
 
+            parent::log($request , 'New user registration with email: '.$request->email);
+
             return parent::apiResponse(true, null, [
                 'user' => auth('api')->user()->profile,
                 'access_token' => $token,
@@ -66,6 +68,9 @@ class UserController extends APIController
 
         }catch(\Exception $e){
             DB::rollBack();
+
+            parent::log($request , 'New user registration failed with email: '.$request->email);
+
             return parent::apiResponse(false, $e->getMessage(), null);
         }
     }
@@ -78,6 +83,10 @@ class UserController extends APIController
             return parent::apiResponse(false, 'Unauthorized', null);
         }
 
+        $request->session()->regenerate();
+
+        parent::log($request , 'User login with email: '.$request->email);
+
         return parent::apiResponse(true, null, [
             'user' => auth('api')->user()->profile,
             'access_token' => $token,
@@ -87,8 +96,10 @@ class UserController extends APIController
 
     }
 
-    public function logout(){
+    public function logout(Request $request){
         auth('api')->logout();
+
+        parent::log($request , 'User logout');
 
         return parent::apiResponse(true, 'Successfully logged out', null);
     }
@@ -122,8 +133,12 @@ class UserController extends APIController
         } else {
             $user = Profile::where('id', $request->user_id)->where('status', 'Active')->where('is_deleted', 0)->first();
             if ($user) {
+
+                parent::log($request , 'User status check. Email: '.$user->email);
                 return parent::apiResponse(true, null, ['user' => $user]);
             } else {
+
+                parent::log($request , 'User status check failed. User not found');
                 return parent::apiResponse(false, 'User not found', null);
             }
         }
