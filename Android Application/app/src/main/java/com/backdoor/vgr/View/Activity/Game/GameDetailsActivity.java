@@ -12,7 +12,6 @@ import android.graphics.text.LineBreaker;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.Html;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -38,12 +37,10 @@ import com.backdoor.vgr.View.Activity.MainActivity;
 import com.backdoor.vgr.View.Model.Game.GameReviews;
 import com.backdoor.vgr.View.Model.Game.ReviewAdapter;
 import com.backdoor.vgr.databinding.ActivityGameDetailsBinding;
-import com.backdoor.vgr.network.ApiClient;
 import com.backdoor.vgr.viewmodel.GameViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,6 +61,7 @@ public class GameDetailsActivity extends AppCompatActivity {
     ActivityGameDetailsBinding binding;
     private GameViewModel viewModel;
     private String gameId;
+    private String imageLink = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,14 +87,13 @@ public class GameDetailsActivity extends AppCompatActivity {
             perfConfig.displayToast("Something going wrong!! \nPlease try again!");
         }
 
+
     }
 
 
     private void listChange() {
         viewModel.getSingleGameContact().observe(this, singleGameContact -> {
             this.gameReviewsList = singleGameContact.getGameDetailsContact().getGameReviewsList();
-
-//            binding.gameDescTxt.setText(Html.fromHtml(singleGameContact.getGameDetailsContact().getDesc(), Html.FROM_HTML_MODE_COMPACT));
 
             if (singleGameContact.isSuccess() && this.gameReviewsList != null && this.gameReviewsList.size() > 0) {
                 binding.reviewsRecyclerView.setVisibility(View.VISIBLE);
@@ -110,26 +107,8 @@ public class GameDetailsActivity extends AppCompatActivity {
         });
 
         viewModel.getGameImage().observe(this, value -> {
-            try {
-                Picasso.get().load(ApiClient.getImageUrl(this) + value)
-                        .error(R.drawable.no_image_found)
-                        .into(binding.gameImageGameDetails);
-                updateBGColorPalette();
-
-                binding.gameImageGameDetails.setOnClickListener(view -> {
-                    Intent intent = new Intent(GameDetailsActivity.this, ImageFullViewActivity.class);
-                    if (viewModel.checkConnection()) {
-                        intent.putExtra(MainActivity.IMAGE_LINK, value);
-                    } else {
-                        // Pass the file path through the intent
-                        intent.putExtra(MainActivity.IMAGE_PATH, getFilePath());
-                    }
-                    startActivity(intent);
-                });
-
-            } catch (Exception e) {
-                binding.gameImageGameDetails.setBackgroundResource(R.drawable.no_image_found);
-            }
+            imageLink = value;
+            updateBGColorPalette();
         });
 
         viewModel.getIsMineReview().observe(this, value -> {
@@ -154,6 +133,17 @@ public class GameDetailsActivity extends AppCompatActivity {
                 viewModel.getSingleGameDetails(gameId);
             }
         });
+
+        binding.gameImageGameDetails.setOnClickListener(view -> {
+            Intent intent = new Intent(GameDetailsActivity.this, ImageFullViewActivity.class);
+            if (viewModel.checkConnection() && imageLink != null) {
+                intent.putExtra(MainActivity.IMAGE_LINK, imageLink);
+            } else {
+                // Pass the file path through the intent
+                intent.putExtra(MainActivity.IMAGE_PATH, getFilePath());
+            }
+            startActivity(intent);
+        });
     }
 
     private String getFilePath() {
@@ -165,7 +155,7 @@ public class GameDetailsActivity extends AppCompatActivity {
 
         // Save the bitmap to a file
         File file = new File(getCacheDir(), "image.png");
-        FileOutputStream fos = null;
+        FileOutputStream fos;
         try {
             fos = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.PNG, 80, fos);
@@ -188,10 +178,7 @@ public class GameDetailsActivity extends AppCompatActivity {
         }
 
         recyclerViewInit();
-        showMoreTextBtn();
         refresh();
-
-        binding.backBtnGameDetails.setOnClickListener(v -> super.onBackPressed());
 
         binding.writeReviewBtn.setOnClickListener(view -> {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -235,35 +222,33 @@ public class GameDetailsActivity extends AppCompatActivity {
                 .setNegativeButton("No", dialogClickListener).show();
     }
 
-    private void showMoreTextBtn() {
-        binding.txtBtnShowMore.setOnClickListener(v -> {
-            if (binding.txtBtnShowMore.getText().toString().equalsIgnoreCase("Show More..")) {
-                binding.gameDescTxt.setMaxLines(Integer.MAX_VALUE);
-                binding.txtBtnShowMore.setText("Show less");
-            } else {
-                binding.gameDescTxt.setMaxLines(5);
-                binding.txtBtnShowMore.setText("Show More..");
-            }
-        });
-    }
 
     private void updateBGColorPalette() {
+        try {
+            Drawable drawable = binding.gameImageGameDetails.getDrawable();
+            if (drawable == null) {
+                return;
+            }
+            Bitmap bitmap = ((BitmapDrawable) binding.gameImageGameDetails.getDrawable()).getBitmap();
+            if (bitmap == null) {
+                return;
+            }
 
-        Bitmap bitmap = ((BitmapDrawable) binding.gameImageGameDetails.getDrawable()).getBitmap();
+            Palette.from(bitmap).generate(palette -> {
+                Window window = GameDetailsActivity.this.getWindow();
 
-        Palette.from(bitmap).generate(palette -> {
-            Window window = GameDetailsActivity.this.getWindow();
+                // clear FLAG_TRANSLUCENT_STATUS flag:
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
-            // clear FLAG_TRANSLUCENT_STATUS flag:
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
-            // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-            // finally change the color
-            assert palette != null;
-            window.setStatusBarColor(palette.getDominantColor(getResources().getColor(R.color.white)));
-        });
+                // finally change the color
+                assert palette != null;
+                window.setStatusBarColor(palette.getDominantColor(getResources().getColor(R.color.white)));
+            });
+        } catch (Exception ignored) {
+        }
     }
 
     private void checkLocationPermission() {

@@ -10,7 +10,9 @@ import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
+import androidx.databinding.BindingAdapter;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -23,12 +25,15 @@ import com.backdoor.vgr.Model.RoomDB.Game.GameDao;
 import com.backdoor.vgr.Model.RoomDB.Game.GameDataEntity;
 import com.backdoor.vgr.Model.RoomDB.Review.ReviewDao;
 import com.backdoor.vgr.Model.RoomDB.Review.ReviewDataEntity;
+import com.backdoor.vgr.R;
 import com.backdoor.vgr.View.Activity.IntroActivity;
 import com.backdoor.vgr.View.Model.Default_Contact;
 import com.backdoor.vgr.View.Model.Game.GameDetailsContact;
 import com.backdoor.vgr.View.Model.Game.GameReviews;
 import com.backdoor.vgr.View.Model.Game.SingleGameContact;
 import com.backdoor.vgr.View.Model.User.UserContact;
+import com.backdoor.vgr.network.ApiClient;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +62,8 @@ public class GameViewModel extends ViewModel {
     MutableLiveData<Integer> buttonPress = new MutableLiveData<>();
     MutableLiveData<Boolean> isMineReview = new MutableLiveData<>(true);
     LiveData<List<GameDataEntity>> gameData = new MutableLiveData<>();
+    MutableLiveData<String> showMoreOrLessTxt = new MutableLiveData<>("Show More...");
+    MutableLiveData<Integer> maxDescLine = new MutableLiveData<>(5);
 
     public MutableLiveData<String> getFullName() {
         return fullName;
@@ -236,10 +243,11 @@ public class GameViewModel extends ViewModel {
         setRating(data.getRating());
         setRatingCount(data.getRating() + "(" + data.getRating_count() + ")");
         setGameName(data.getName());
-        setGameDesc(Html.fromHtml(data.getDesc(),Html.FROM_HTML_MODE_COMPACT));
+        setGameDesc(Html.fromHtml(data.getDesc(), Html.FROM_HTML_MODE_COMPACT));
         if (data.getBanner() != null) {
             if (!data.getBanner().equals("")) {
                 setGameImage(data.getBanner());
+                gameImage.postValue(data.getBanner());
             }
         }
 
@@ -252,6 +260,16 @@ public class GameViewModel extends ViewModel {
         buttonPress.setValue(1);
     }
 
+    @BindingAdapter("picassoImageLoad")
+    public static void loadImage(ImageView view, String imageUrl) {
+        try {
+            Picasso.get().load(ApiClient.getImageUrl(view.getContext()) + imageUrl)
+                    .error(R.drawable.no_image_found)
+                    .into(view);
+        } catch (Exception e) {
+            view.setBackgroundResource(R.drawable.no_image_found);
+        }
+    }
 
     public MutableLiveData<String> getGameName() {
         return gameName;
@@ -278,6 +296,9 @@ public class GameViewModel extends ViewModel {
     }
 
     public MutableLiveData<String> getGameImage() {
+        if (gameImage == null) {
+            gameImage = new MutableLiveData<>();
+        }
         return gameImage;
     }
 
@@ -307,6 +328,32 @@ public class GameViewModel extends ViewModel {
 
     public void setIsMineReview(Boolean isMineReview) {
         this.isMineReview.setValue(isMineReview);
+    }
+
+    public MutableLiveData<String> getShowMoreOrLessTxt() {
+        return showMoreOrLessTxt;
+    }
+
+    public void setShowMoreOrLessTxt(String showMoreOrLessTxt) {
+        this.showMoreOrLessTxt.setValue(showMoreOrLessTxt);
+    }
+
+    public void onTapMoreTextBtn() {
+        if (Objects.equals(showMoreOrLessTxt.getValue(), "Show More...")) {
+            setMaxDescLine(Integer.MAX_VALUE);
+            setShowMoreOrLessTxt("Show less");
+        } else {
+            setMaxDescLine(5);
+            setShowMoreOrLessTxt("Show More...");
+        }
+    }
+
+    public MutableLiveData<Integer> getMaxDescLine() {
+        return maxDescLine;
+    }
+
+    public void setMaxDescLine(Integer maxDescLine) {
+        this.maxDescLine.setValue(maxDescLine);
     }
 
     public MutableLiveData<List<GameDetailsContact>> getGameDetailsContactList() {
@@ -368,4 +415,9 @@ public class GameViewModel extends ViewModel {
             return true;
         }
     }
+
+    public void onBackBtnPress() {
+        activity.onBackPressed();
+    }
+
 }
