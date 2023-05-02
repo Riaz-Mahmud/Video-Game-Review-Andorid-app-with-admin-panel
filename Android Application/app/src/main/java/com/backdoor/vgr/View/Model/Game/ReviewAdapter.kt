@@ -44,7 +44,7 @@ class ReviewAdapter(
         holder.binding.userName.text = name
         holder.binding.comment.text = contact!![position].comment
         holder.binding.rating.text = contact!![position].rating.toString()
-        holder.binding.deleteReviewBtn.setOnClickListener { view: View? ->
+        holder.binding.deleteReviewBtn.setOnClickListener {
             onItemClickListener.onItemClick(
                 position
             )

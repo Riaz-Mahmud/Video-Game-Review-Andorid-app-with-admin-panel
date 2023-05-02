@@ -48,7 +48,7 @@ class GameAdapter(
                 }
             }
         }
-        holder.parentLayout.setOnClickListener { view: View? ->
+        holder.parentLayout.setOnClickListener {
             val intent = Intent(mContext, GameDetailsActivity::class.java)
             intent.putExtra(MainActivity.GAME_ID, contact!![position].id)
             mContext.startActivity(intent)

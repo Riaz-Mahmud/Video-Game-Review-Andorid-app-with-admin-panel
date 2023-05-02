@@ -1,5 +1,6 @@
 package com.backdoor.vgr.View.Activity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -17,18 +18,12 @@ import com.backdoor.vgr.viewmodel.AuthViewModel;
 
 public class IntroActivity extends AppCompatActivity {
 
-    private boolean isThreadOpen = false;
-    private final Handler mainHandler = new Handler();
-
     public static ReviewQuestDatabase database;
     public GameDao gameDao = null;
     public ReviewDao reviewDao = null;
 
+    @SuppressLint("StaticFieldLeak")
     public static PerfConfig perfConfig;
-    public static String PHONE_NUMBER = "phone_number";
-    public static String OTHER = "others";
-    public static String USER_ID = "user_id";
-    public static String TYPE = "type";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +42,6 @@ public class IntroActivity extends AppCompatActivity {
         database = ReviewQuestDatabase.Companion.getDatabase(this);
         gameDao = ReviewQuestDatabase.Companion.getDatabase(this).getGameDao();
         reviewDao = ReviewQuestDatabase.Companion.getDatabase(this).getReviewDao();
-
 
         viewModel.checkAlreadyLoggedIn();
 

@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.palette.graphics.Palette
 import com.backdoor.vgr.R
+import com.backdoor.vgr.View.Activity.MainActivity.Companion.perfConfig
 import com.backdoor.vgr.databinding.ActivityImageFullViewBinding
 import com.backdoor.vgr.network.ApiClient
 import com.squareup.picasso.Picasso
@@ -40,14 +41,14 @@ class ImageFullViewActivity : AppCompatActivity() {
             if (imageLink!!.isNotEmpty()) {
                 setImage(imageLink)
             } else {
-                MainActivity.perfConfig.displayToast("Something going wrong!")
+                perfConfig.displayToast("Something going wrong!")
                 onBackPressedDispatcher.onBackPressed()
             }
         } else if (intent.hasExtra(MainActivity.IMAGE_PATH)) {
             val imagePath = intent.getStringExtra(MainActivity.IMAGE_PATH)
             setImagePath(imagePath)
         } else {
-            MainActivity.perfConfig.displayToast("Something going wrong!")
+            perfConfig.displayToast("Something going wrong!")
             onBackPressedDispatcher.onBackPressed()
         }
     }
@@ -82,7 +83,13 @@ class ImageFullViewActivity : AppCompatActivity() {
         val bitmap = (binding.fullViewImage.drawable as BitmapDrawable).bitmap
         Palette.from(bitmap).generate { palette: Palette? ->
             assert(palette != null)
-            binding.fullImageViewLayout.setBackgroundColor(palette!!.getDominantColor(resources.getColor(R.color.black)))
+            binding.fullImageViewLayout.setBackgroundColor(
+                palette!!.getDominantColor(
+                    resources.getColor(
+                        R.color.black
+                    )
+                )
+            )
         }
     }
 
@@ -90,7 +97,7 @@ class ImageFullViewActivity : AppCompatActivity() {
         val manager = (getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager)
         val activeNetwork = manager.activeNetworkInfo
         return if (activeNetwork == null) {
-            MainActivity.perfConfig.displayToast("No Internet Connection")
+            perfConfig.displayToast("No Internet Connection")
             false
         } else {
             true

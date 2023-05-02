@@ -21,7 +21,7 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments += [
+                arguments = [
                         "room.schemaLocation": "$projectDir/schemas".toString(),
                 ]
             }
@@ -108,7 +108,7 @@ dependencies {
     implementation 'com.github.hajiyevelnur92:intentanimation:1.0'
 
     //Room Database
-    def room_version = "2.4.3"
+    def room_version = "2.5.1"
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
