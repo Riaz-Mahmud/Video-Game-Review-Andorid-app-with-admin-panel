@@ -43,7 +43,7 @@ return [
     */
 
     'geloky' => [
-        'api_key' => env('GELOKY_API_KEY', 'jAhDaBZ7koWLsUSLp6rX6pOEXfl9WAm1'),
+        'api_key' => env('GELOKY_API_KEY', '##'),
     ],
 
     /*
@@ -56,7 +56,7 @@ return [
     */
 
     'googleMaps' => [
-        'api_key' => env('GOOGLE_MAPS_API_KEY', 'AIzaSyDugIMfiX1Sa9fVahIn52fRhr1Coa7pfeM'),
+        'api_key' => env('GOOGLE_MAPS_API_KEY', '###'),
     ],
 
 ];
